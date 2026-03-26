@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback } from "react";
 
 import { t } from "@/i18n/en";
-import type { SafetyLevel, SkillAction, SkillRule } from "@/lib/types";
+import type { PolicyConfig, SkillAction, SkillRule } from "@/lib/types";
 
-const DEMO_SKILLS: SkillRule[] = [
+const DEFAULT_SKILLS: SkillRule[] = [
   { name: "web_search", risk: "low", action: "allow" },
   { name: "file_read", risk: "medium", action: "ask" },
   { name: "file_write", risk: "medium", action: "ask" },
@@ -27,23 +27,38 @@ const RISK_BG: Record<string, string> = {
   critical: "var(--color-status-risk-bg)",
 };
 
-export default function ToolsTab() {
-  const [skills, setSkills] = useState<SkillRule[]>(DEMO_SKILLS);
+interface ToolsTabProps {
+  policy: PolicyConfig;
+  onSave: (policy: PolicyConfig) => void;
+}
+
+export default function ToolsTab({ policy, onSave }: ToolsTabProps) {
+  const toolsConfig = policy.tools as Record<string, unknown>;
+  const rules = (toolsConfig.rules as SkillRule[]) || DEFAULT_SKILLS;
+  const skills = rules.length > 0 ? rules : DEFAULT_SKILLS;
+
+  const saveRules = useCallback(
+    (updated: SkillRule[]) => {
+      onSave({
+        ...policy,
+        tools: { ...toolsConfig, rules: updated },
+      });
+    },
+    [policy, toolsConfig, onSave]
+  );
 
   const blockAllHighRisk = () => {
-    setSkills((prev) =>
-      prev.map((s) =>
-        s.risk === "high" || s.risk === "critical"
-          ? { ...s, action: "block" as SkillAction }
-          : s
-      )
+    const updated = skills.map((s) =>
+      s.risk === "high" || s.risk === "critical"
+        ? { ...s, action: "block" as SkillAction }
+        : s
     );
+    saveRules(updated);
   };
 
   const updateAction = (name: string, action: SkillAction) => {
-    setSkills((prev) =>
-      prev.map((s) => (s.name === name ? { ...s, action } : s))
-    );
+    const updated = skills.map((s) => (s.name === name ? { ...s, action } : s));
+    saveRules(updated);
   };
 
   return (
@@ -63,7 +78,7 @@ export default function ToolsTab() {
       </div>
 
       <div
-        className="overflow-hidden rounded-lg border"
+        className="overflow-x-auto rounded-lg border"
         style={{
           borderColor: "var(--color-border)",
           borderRadius: "var(--radius-md)",
@@ -94,8 +109,8 @@ export default function ToolsTab() {
                   <span
                     className="rounded-full px-2 py-0.5 text-xs font-medium"
                     style={{
-                      backgroundColor: RISK_BG[skill.risk],
-                      color: RISK_COLORS[skill.risk],
+                      backgroundColor: RISK_BG[skill.risk] || RISK_BG.medium,
+                      color: RISK_COLORS[skill.risk] || RISK_COLORS.medium,
                     }}
                   >
                     {skill.risk}
@@ -107,6 +122,7 @@ export default function ToolsTab() {
                     onChange={(e) =>
                       updateAction(skill.name, e.target.value as SkillAction)
                     }
+                    aria-label={`${skill.name} action`}
                     className="rounded-md border px-2 py-1 text-xs"
                     style={{
                       backgroundColor: "var(--color-bg-card)",

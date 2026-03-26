@@ -11,6 +11,12 @@ const SEVERITY_DOTS: Record<SafetyLevel, string> = {
   risk: "var(--color-status-risk)",
 };
 
+const SEVERITY_LABELS: Record<SafetyLevel, string> = {
+  safe: "info",
+  attention: "warning",
+  risk: "critical",
+};
+
 interface RecentActivityProps {
   events: ActivityEvent[];
   loading: boolean;
@@ -55,6 +61,8 @@ export default function RecentActivity({
             <span
               className="mt-1.5 h-2 w-2 shrink-0 rounded-full"
               style={{ backgroundColor: SEVERITY_DOTS[event.severity] }}
+              aria-label={SEVERITY_LABELS[event.severity]}
+              title={SEVERITY_LABELS[event.severity]}
             />
             <span style={{ color: "var(--color-text-muted)" }} className="shrink-0 text-xs">
               {new Date(event.timestamp).toLocaleTimeString([], {
