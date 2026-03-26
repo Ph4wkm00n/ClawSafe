@@ -37,6 +37,9 @@ def scan_file_for_secrets(filepath: str) -> list[dict]:
         return []
 
     try:
+        # Skip files larger than 10MB to prevent memory issues
+        if path.stat().st_size > 10_000_000:
+            return []
         content = path.read_text(errors="ignore")
     except (OSError, UnicodeDecodeError):
         return []
@@ -66,7 +69,7 @@ def scan_directory_for_secrets(directory: str, max_files: int = 500) -> dict:
     all_findings = []
     files_scanned = 0
 
-    for root, dirs, files in os.walk(directory):
+    for root, dirs, files in os.walk(directory, followlinks=False):
         # Skip excluded directories
         dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
 

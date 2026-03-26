@@ -118,6 +118,13 @@ async def apply_fix(action_id: str) -> FixResult:
         )
     except Exception as e:
         logger.error("Fix failed for %s: %s", action_id, e)
+        # Auto-rollback on failure
+        if backup_id:
+            try:
+                await restore_backup(backup_id)
+                logger.info("Auto-rolled back fix %s after failure", action_id)
+            except Exception as rollback_err:
+                logger.error("Rollback also failed for %s: %s", action_id, rollback_err)
         await log_event("fix_failed", f"Auto-fix failed: {action_id} — {e}", "risk")
         return FixResult(
             success=False,
