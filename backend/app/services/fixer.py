@@ -11,6 +11,7 @@ from app.core.config import settings
 from app.models.schemas import FixResult
 from app.services.activity import log_event
 from app.services.backup import create_backup, restore_backup
+from app.services.metrics import fix_counter
 
 logger = logging.getLogger(__name__)
 
@@ -107,6 +108,7 @@ async def apply_fix(action_id: str) -> FixResult:
         message = await handler(config)
         await _save_config(config)
         await log_event("fix_applied", f"Auto-fix applied: {action_id}", "safe")
+        fix_counter.inc()
         logger.info("Fix applied: %s", action_id)
         return FixResult(
             success=True,
