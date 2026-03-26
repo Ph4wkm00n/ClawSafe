@@ -17,6 +17,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <a href="#main-content" className="skip-to-content">
+          Skip to content
+        </a>
         <AppShell>{children}</AppShell>
       </body>
     </html>

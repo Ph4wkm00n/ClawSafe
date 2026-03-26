@@ -5,8 +5,58 @@ body {
   font-family: var(--font-family);
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 * {
   border-color: var(--color-border);
+}
+
+/* Skeleton pulse animation */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.animate-pulse {
+  animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Theme transition for cards */
+[style*="background-color"] {
+  transition: background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+
+/* Focus visible outlines for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-brand-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Skip to content link */
+.skip-to-content {
+  position: absolute;
+  left: -9999px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.skip-to-content:focus {
+  position: fixed;
+  top: 0.5rem;
+  left: 0.5rem;
+  width: auto;
+  height: auto;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-brand-primary);
+  color: #fff;
+  border-radius: var(--radius-md);
+  z-index: 100;
+  font-size: var(--font-size-sm);
+}
+
+/* Hide mascot in minimal theme */
+[data-theme="minimal"] [data-hide-minimal="true"] {
+  display: none;
 }
