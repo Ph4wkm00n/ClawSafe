@@ -105,6 +105,15 @@ const strings: Record<string, string> = {
   "settings.integrations.webhooks_desc": "Notification endpoints for Slack, Discord, etc.",
   "settings.integrations.email": "Email Notifications",
   "settings.integrations.email_desc": "Send alerts via email when risk level changes.",
+  "settings.integrations.email_address": "Email address",
+  "settings.integrations.test_email": "Send test",
+  "settings.integrations.sending": "Sending...",
+  "settings.integrations.email_test_sent": "Test email sent successfully.",
+  "settings.integrations.email_test_failed": "Failed to send test email. Check SMTP configuration.",
+  "settings.integrations.test_success": "Test notification sent successfully.",
+  "settings.integrations.test_failed": "Failed to send test notification.",
+  "settings.saved": "Settings saved",
+  "settings.save_failed": "Failed to save settings",
 
   // Appearance
   "appearance.title": "Appearance",

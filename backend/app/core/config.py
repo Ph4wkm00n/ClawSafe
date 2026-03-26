@@ -13,6 +13,11 @@ class Settings(BaseSettings):
     scan_interval: int = 3600
     demo_mode: bool = True
     log_level: str = "INFO"
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = ""
 
     model_config = {"env_prefix": "CLAWSAFE_"}
 

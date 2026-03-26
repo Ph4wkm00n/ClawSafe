@@ -103,3 +103,9 @@ async def notify_escalation(old_status: str, new_status: str) -> None:
     for webhook in config.webhooks:
         if "escalation" in webhook.events:
             await send_webhook(webhook.url, payload)
+
+    # Send email notification if configured
+    if config.email_enabled and config.email_address:
+        from app.services.email import send_escalation_email
+
+        await send_escalation_email(config.email_address, old_status, new_status)
