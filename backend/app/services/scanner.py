@@ -71,7 +71,7 @@ def _check_data(config: dict | None) -> dict:
         mounts = []
     sensitive = {"/", "/etc", "/root", "/home"}
     broad = any(
-        isinstance(m, str) and m.rstrip("/") in sensitive
+        isinstance(m, str) and (m in sensitive or m.rstrip("/") in sensitive)
         for m in mounts
     )
     return {"mounts": mounts, "broad_access": broad}

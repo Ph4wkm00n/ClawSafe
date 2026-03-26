@@ -70,25 +70,21 @@ docker compose -f docker-compose.yml -f docker-compose.smb.yml up --build -d
 - [Installation Guide](docs/installation.md)
 - [Configuration Reference](docs/configuration.md)
 - [API Reference](docs/api-reference.md)
+- [Security Guide](docs/security.md)
+- [Operations Guide](docs/operations.md)
 - [Contributing](docs/contributing.md)
-- [Implementation Plan](docs/implementation/)
-- [UI/UX Design Specs](docs/ui-ux/)
 
 ---
 
 ## Development
 
 ```bash
-# Backend
-cd backend && pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
-
-# Frontend
-cd frontend && npm install && npm run dev
-
-# Tests
-cd backend && pytest
-cd frontend && npm test
+make install   # Install all dependencies
+make dev       # Start backend + frontend in dev mode
+make test      # Run all tests
+make lint      # Run linters
+make build     # Build Docker images
+make up        # Start with Docker Compose
 ```
 
 ---
