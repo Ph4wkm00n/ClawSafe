@@ -2,6 +2,7 @@ from fastapi import APIRouter
 
 from app.api import (
     activity,
+    auth,
     fixer,
     health,
     instances,
@@ -26,3 +27,4 @@ api_router.include_router(scans.router, tags=["scans"])
 api_router.include_router(notifications.router, tags=["notifications"])
 api_router.include_router(skill.router, tags=["skill"])
 api_router.include_router(instances.router, tags=["instances"])
+api_router.include_router(auth.router, tags=["auth"])
