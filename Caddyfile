@@ -1,0 +1,18 @@
+# ClawSafe Caddy configuration
+# Replace clawsafe.example.com with your domain
+# For local development, use :80 instead
+
+:80 {
+    # Frontend
+    reverse_proxy frontend:3000
+
+    # Backend API
+    handle_path /api/* {
+        reverse_proxy backend:8000
+    }
+
+    # Prometheus metrics
+    handle_path /metrics {
+        reverse_proxy backend:8000
+    }
+}

@@ -6,45 +6,45 @@ Goal: Production-ready UX, comprehensive docs, and stable release.
 
 ### 4.1 UX Polish
 
-- [ ] Mascot illustrations for all safety states (Safe, Attention, At Risk)
-- [ ] Micro-animations: status transitions, hover effects, fix progress
-- [ ] Empty states with helpful guidance
-- [ ] Error states with recovery actions
-- [ ] Loading skeletons for all async content
-- [ ] Mobile responsiveness audit and fixes
+- [x] Mascot illustrations for all safety states (Safe, Attention, At Risk)
+- [x] Micro-animations: status transitions, hover effects, fix progress
+- [x] Empty states with helpful guidance
+- [x] Error states with recovery actions
+- [x] Loading skeletons for all async content
+- [x] Mobile responsiveness audit and fixes
 
 ### 4.2 Accessibility Audit
 
-- [ ] Full keyboard navigation testing
-- [ ] Screen reader testing (NVDA/VoiceOver)
-- [ ] Color contrast verification in all theme/mode combinations
-- [ ] Focus indicators visible in all themes
-- [ ] ARIA labels on all interactive elements
+- [x] Full keyboard navigation testing
+- [x] Screen reader testing (NVDA/VoiceOver)
+- [x] Color contrast verification in all theme/mode combinations
+- [x] Focus indicators visible in all themes
+- [x] ARIA labels on all interactive elements
 
 ### 4.3 Documentation
 
-- [ ] Complete README with screenshots
-- [ ] Installation guide (step-by-step for Docker beginners)
-- [ ] Configuration reference (all YAML policy options)
-- [ ] API reference (OpenAPI/Swagger auto-generated)
-- [ ] Contributing guide
-- [ ] Example configs for common setups
+- [x] Complete README with screenshots
+- [x] Installation guide (step-by-step for Docker beginners)
+- [x] Configuration reference (all YAML policy options)
+- [x] API reference (OpenAPI/Swagger auto-generated)
+- [x] Contributing guide
+- [x] Example configs for common setups
 
 ### 4.4 Testing & Hardening
 
-- [ ] Backend: 80%+ test coverage on scanner, fixer, and API
-- [ ] Frontend: component tests for all key screens
-- [ ] E2E tests for critical flows (onboarding, fix, theme switch)
-- [ ] Security review: no secrets in config, safe Docker defaults
-- [ ] Performance: dashboard loads in <2s on modest hardware
+- [x] Backend: 80%+ test coverage on scanner, fixer, and API
+- [x] Frontend: component tests for all key screens
+- [x] E2E tests for critical flows (onboarding, fix, theme switch)
+- [x] Security review: no secrets in config, safe Docker defaults
+- [x] Performance: dashboard loads in <2s on modest hardware
 
 ### 4.5 Release
 
-- [ ] Docker Hub image publishing pipeline
-- [ ] Versioned tags (semver)
-- [ ] CHANGELOG.md
-- [ ] GitHub release with binary/image links
-- [ ] Upgrade migration script (v0.x -> v1.0)
+- [x] Docker Hub image publishing pipeline
+- [x] Versioned tags (semver)
+- [x] CHANGELOG.md
+- [x] GitHub release with binary/image links
+- [x] Upgrade migration script (v0.x -> v1.0)
 
 ## Acceptance Criteria
 

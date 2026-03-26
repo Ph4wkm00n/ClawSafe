@@ -16,13 +16,33 @@ const RISK_STYLES = {
   risk: { bg: "var(--color-status-risk-bg)", color: "var(--color-status-risk)" },
 };
 
-export default function DataTab() {
-  const [mounts, setMounts] = useState(DEMO_MOUNTS);
-  const [backupEnabled, setBackupEnabled] = useState(true);
-  const [backupFreq, setBackupFreq] = useState("daily");
+import type { PolicyConfig } from "@/lib/types";
+
+interface DataTabProps {
+  policy: PolicyConfig;
+  onSave: (policy: PolicyConfig) => void;
+}
+
+export default function DataTab({ policy, onSave }: DataTabProps) {
+  const dataConfig = policy.data as Record<string, unknown>;
+  const allowedMounts = (dataConfig.allowed_mounts as string[]) || [];
+  const backup = (dataConfig.backup as Record<string, unknown>) || {};
+  const backupEnabled = (backup.enabled as boolean) ?? true;
+  const backupFreq = (backup.frequency as string) || "daily";
+
+  const mounts = allowedMounts.length > 0
+    ? allowedMounts.map((p) => ({
+        path: p,
+        risk: (["/", "/etc", "/root", "/home"].includes(p.replace(/\/$/, "")) ? "risk" : "safe") as "safe" | "risk",
+      }))
+    : DEMO_MOUNTS;
 
   const removeMount = (path: string) => {
-    setMounts((prev) => prev.filter((m) => m.path !== path));
+    const updated = mounts.filter((m) => m.path !== path);
+    onSave({
+      ...policy,
+      data: { ...dataConfig, allowed_mounts: updated.map((m) => m.path) },
+    });
   };
 
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode, useEffect, useRef } from "react";
 
 import { t } from "@/i18n/en";
 
@@ -17,16 +17,44 @@ export default function SideSheet({
   title,
   children,
 }: SideSheetProps) {
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
+
   useEffect(() => {
+    if (!open) return;
+
+    // Focus close button when sheet opens
+    closeRef.current?.focus();
+
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
-    if (open) {
-      document.addEventListener("keydown", handleEsc);
-      document.body.style.overflow = "hidden";
-    }
+
+    // Focus trap: cycle tab within sheet
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== "Tab" || !sheetRef.current) return;
+      const focusable = sheetRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleEsc);
+    document.addEventListener("keydown", handleTab);
+    document.body.style.overflow = "hidden";
+
     return () => {
       document.removeEventListener("keydown", handleEsc);
+      document.removeEventListener("keydown", handleTab);
       document.body.style.overflow = "";
     };
   }, [open, onClose]);
@@ -34,16 +62,18 @@ export default function SideSheet({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true" aria-label={title}>
       {/* Backdrop */}
       <div
         className="absolute inset-0"
         style={{ backgroundColor: "var(--color-backdrop)" }}
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Sheet */}
       <div
+        ref={sheetRef}
         className="relative flex h-full w-full max-w-md flex-col overflow-y-auto"
         style={{
           backgroundColor: "var(--color-bg-card)",
@@ -58,6 +88,7 @@ export default function SideSheet({
             {title}
           </h2>
           <button
+            ref={closeRef}
             onClick={onClose}
             className="rounded-lg p-2 transition-colors hover:opacity-70"
             aria-label={t("common.close")}
