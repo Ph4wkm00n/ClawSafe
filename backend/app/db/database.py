@@ -6,10 +6,8 @@ import asyncio
 import logging
 from pathlib import Path
 
-import aiosqlite
-
 from app.core.config import settings
-from app.db.queries import Database, SQLiteDatabase
+from app.db.queries import Database
 
 logger = logging.getLogger(__name__)
 
@@ -51,13 +49,41 @@ async def _run_migrations(db: Database) -> None:
         await db.commit()
 
 
+async def _create_sqlite() -> Database:
+    """Create SQLite database connection."""
+    import aiosqlite
+
+    from app.db.queries import SQLiteDatabase
+
+    conn = await aiosqlite.connect(settings.database_path)
+    return SQLiteDatabase(conn)
+
+
+async def _create_postgresql() -> Database:
+    """Create PostgreSQL connection pool."""
+    import asyncpg
+
+    from app.db.postgresql import PostgreSQLDatabase
+
+    pool = await asyncpg.create_pool(
+        settings.db_url,
+        min_size=settings.db_pool_min,
+        max_size=settings.db_pool_max,
+    )
+    return PostgreSQLDatabase(pool)
+
+
 async def get_db() -> Database:
     """Get the database instance. Creates and migrates on first call."""
     global _db
     async with _lock:
         if _db is None:
-            conn = await aiosqlite.connect(settings.database_path)
-            _db = SQLiteDatabase(conn)
+            if settings.db_type == "postgresql" and settings.db_url:
+                logger.info("Connecting to PostgreSQL")
+                _db = await _create_postgresql()
+            else:
+                logger.info("Using SQLite at %s", settings.database_path)
+                _db = await _create_sqlite()
             await _run_migrations(_db)
     return _db
 

@@ -13,6 +13,10 @@ class Settings(BaseSettings):
     scan_interval: int = 3600
     demo_mode: bool = True
     log_level: str = "INFO"
+    db_type: str = "sqlite"
+    db_url: str = ""
+    db_pool_min: int = 2
+    db_pool_max: int = 10
     smtp_host: str = ""
     smtp_port: int = 587
     smtp_user: str = ""
