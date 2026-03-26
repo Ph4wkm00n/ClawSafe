@@ -76,7 +76,7 @@ class UserSettings(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str = "ok"
-    version: str = "0.2.0"
+    version: str = "0.3.0"
 
 
 class FixResult(BaseModel):
@@ -120,3 +120,35 @@ class PolicyResponse(BaseModel):
     name: str
     active: bool
     config: PolicyConfig
+
+
+class WebhookConfig(BaseModel):
+    url: str
+    name: str = ""
+    events: list[str] = ["escalation"]
+
+
+class NotificationConfig(BaseModel):
+    webhooks: list[WebhookConfig] = []
+    email_enabled: bool = False
+    email_address: str = ""
+    events: list[str] = ["escalation", "weekly_summary"]
+
+
+class ScanHistoryEntry(BaseModel):
+    id: int
+    timestamp: str
+    overall_status: str
+    score: int
+
+
+class ScanHistoryList(BaseModel):
+    scans: list[ScanHistoryEntry]
+    total: int
+
+
+class SkillStatusResponse(BaseModel):
+    summary: str
+    status: str
+    score: int
+    top_actions: list[str]

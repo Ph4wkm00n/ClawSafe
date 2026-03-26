@@ -90,3 +90,25 @@ export function validatePolicy(config: PolicyConfig): Promise<PolicyValidation> 
     body: JSON.stringify(config),
   });
 }
+
+export function getScans(limit = 20, offset = 0): Promise<{ scans: Array<{ id: number; timestamp: string; overall_status: string; score: number }>; total: number }> {
+  return fetchAPI(`/api/v1/scans?limit=${limit}&offset=${offset}`);
+}
+
+export function getNotificationConfig(): Promise<Record<string, unknown>> {
+  return fetchAPI("/api/v1/settings/notifications");
+}
+
+export function updateNotificationConfig(config: Record<string, unknown>): Promise<Record<string, unknown>> {
+  return fetchAPI("/api/v1/settings/notifications", {
+    method: "PUT",
+    body: JSON.stringify(config),
+  });
+}
+
+export function testNotification(url: string): Promise<{ success: boolean }> {
+  return fetchAPI("/api/v1/settings/notifications/test", {
+    method: "POST",
+    body: JSON.stringify({ url }),
+  });
+}

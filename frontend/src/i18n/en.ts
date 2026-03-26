@@ -97,7 +97,14 @@ const strings: Record<string, string> = {
   "settings.data.frequency_desc": "How often to create backups.",
 
   // Settings - Integrations
-  "settings.integrations.coming_soon": "Integrations will be available in v0.3 (metrics, webhooks, email alerts).",
+  "settings.integrations.metrics": "Metrics Endpoint",
+  "settings.integrations.metrics_desc": "Prometheus-compatible scrape URL (read-only).",
+  "settings.integrations.log_format": "Log Output Format",
+  "settings.integrations.log_format_desc": "Format for structured log output.",
+  "settings.integrations.webhooks": "Webhooks",
+  "settings.integrations.webhooks_desc": "Notification endpoints for Slack, Discord, etc.",
+  "settings.integrations.email": "Email Notifications",
+  "settings.integrations.email_desc": "Send alerts via email when risk level changes.",
 
   // Appearance
   "appearance.title": "Appearance",
