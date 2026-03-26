@@ -13,6 +13,7 @@ from app.api import (
     settings,
     skill,
     status,
+    vulnerabilities,
 )
 
 api_router = APIRouter(prefix="/api/v1")
@@ -28,3 +29,4 @@ api_router.include_router(notifications.router, tags=["notifications"])
 api_router.include_router(skill.router, tags=["skill"])
 api_router.include_router(instances.router, tags=["instances"])
 api_router.include_router(auth.router, tags=["auth"])
+api_router.include_router(vulnerabilities.router, tags=["vulnerabilities"])

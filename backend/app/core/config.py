@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     db_url: str = ""
     db_pool_min: int = 2
     db_pool_max: int = 10
+    trivy_enabled: bool = False
+    docker_socket: str = "/var/run/docker.sock"
     jwt_secret: str = ""
     jwt_expire_minutes: int = 1440
     smtp_host: str = ""

@@ -6,6 +6,7 @@ const strings: Record<string, string> = {
   // Navigation
   "nav.dashboard": "Dashboard",
   "nav.instances": "Instances",
+  "nav.vulnerabilities": "Vulnerabilities",
   "nav.activity": "Activity",
   "nav.settings": "Advanced Settings",
   "nav.appearance": "Appearance",
@@ -150,6 +151,14 @@ const strings: Record<string, string> = {
   "about.version": "Version",
   "about.docs": "Documentation",
   "about.github": "GitHub",
+
+  // Vulnerabilities
+  "vulns.title": "Vulnerabilities",
+  "vulns.containers": "Containers",
+  "vulns.total_vulns": "Vulnerabilities",
+  "vulns.critical": "Critical",
+  "vulns.no_containers": "No Docker containers detected. Is Docker running?",
+  "vulns.no_vulns": "No vulnerabilities found in this image.",
 
   // Common
   "common.back": "Back",
