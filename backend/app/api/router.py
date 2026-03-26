@@ -4,6 +4,7 @@ from app.api import (
     activity,
     fixer,
     health,
+    instances,
     notifications,
     policy,
     recommendations,
@@ -24,3 +25,4 @@ api_router.include_router(policy.router, tags=["policy"])
 api_router.include_router(scans.router, tags=["scans"])
 api_router.include_router(notifications.router, tags=["notifications"])
 api_router.include_router(skill.router, tags=["skill"])
+api_router.include_router(instances.router, tags=["instances"])

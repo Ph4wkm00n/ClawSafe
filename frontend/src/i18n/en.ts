@@ -5,6 +5,7 @@ const strings: Record<string, string> = {
 
   // Navigation
   "nav.dashboard": "Dashboard",
+  "nav.instances": "Instances",
   "nav.activity": "Activity",
   "nav.settings": "Advanced Settings",
   "nav.appearance": "Appearance",
@@ -126,6 +127,18 @@ const strings: Record<string, string> = {
   "appearance.mode.system": "Match system",
   "appearance.mode.light": "Light",
   "appearance.mode.dark": "Dark",
+
+  // Instances
+  "instances.title": "Instances",
+  "instances.add": "Add Instance",
+  "instances.remove": "Remove",
+  "instances.added": "Instance added successfully.",
+  "instances.add_failed": "Failed to add instance.",
+  "instances.removed": "Instance removed.",
+  "instances.remove_failed": "Cannot remove this instance.",
+  "instances.name_placeholder": "Instance name (e.g., Production)",
+  "instances.path_placeholder": "/etc/openclaw/config.yaml",
+  "instances.save": "Save",
 
   // Activity
   "activity.title": "Activity",

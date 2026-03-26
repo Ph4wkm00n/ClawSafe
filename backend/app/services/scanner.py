@@ -12,8 +12,8 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 
-def _load_openclaw_config() -> dict | None:
-    path = Path(settings.openclaw_config_path)
+def _load_openclaw_config(config_path: str | None = None) -> dict | None:
+    path = Path(config_path or settings.openclaw_config_path)
     if not path.exists():
         return None
     try:
@@ -95,9 +95,14 @@ def _check_updates() -> dict:
     }
 
 
-def scan_openclaw() -> dict:
-    """Run a full scan and return raw findings."""
-    config = _load_openclaw_config()
+def scan_openclaw(config_path: str | None = None) -> dict:
+    """Run a full scan and return raw findings.
+
+    Args:
+        config_path: Optional override for OpenClaw config path.
+                     Uses settings.openclaw_config_path if not provided.
+    """
+    config = _load_openclaw_config(config_path)
     detected = config is not None
 
     return {
