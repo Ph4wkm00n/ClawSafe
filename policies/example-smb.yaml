@@ -1,0 +1,55 @@
+# ClawSafe SMB Policy — For small businesses with monitoring
+version: "1"
+name: smb
+
+network:
+  bind_address: "0.0.0.0"
+  allowed_cidrs:
+    - "10.0.0.0/8"
+    - "172.16.0.0/12"
+    - "192.168.0.0/16"
+  vpn_only: true
+
+tools:
+  default_action: ask
+  rules:
+    - name: web_search
+      risk: low
+      action: allow
+    - name: file_read
+      risk: medium
+      action: allow
+    - name: file_write
+      risk: medium
+      action: ask
+    - name: shell_exec
+      risk: high
+      action: block
+    - name: email_send
+      risk: medium
+      action: ask
+
+data:
+  allowed_mounts:
+    - "/app/data"
+    - "/app/shared"
+  backup:
+    enabled: true
+    frequency: hourly
+    destination: "/data/backups"
+
+auth:
+  enabled: true
+  method: token
+
+monitoring:
+  scan_interval: 3600  # hourly
+  log_format: json
+
+integrations:
+  metrics:
+    enabled: true
+    port: 9090
+  webhooks: []
+  email:
+    enabled: false

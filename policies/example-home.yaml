@@ -1,0 +1,40 @@
+# ClawSafe Home User Policy — Optimized for personal use
+version: "1"
+name: home
+
+network:
+  bind_address: "127.0.0.1"
+  allowed_cidrs:
+    - "127.0.0.0/8"
+  vpn_only: false
+
+tools:
+  default_action: ask
+  rules:
+    - name: web_search
+      risk: low
+      action: allow
+    - name: file_read
+      risk: medium
+      action: allow
+    - name: file_write
+      risk: medium
+      action: ask
+    - name: shell_exec
+      risk: high
+      action: block
+
+data:
+  allowed_mounts:
+    - "/home/user/documents"
+    - "/home/user/media"
+  backup:
+    enabled: false
+
+auth:
+  enabled: true
+  method: token
+
+monitoring:
+  scan_interval: 86400  # daily
+  log_format: text
