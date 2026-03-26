@@ -8,51 +8,51 @@ Covers: FR-12, FR-13, FR-16, FR-17, FR-18.
 
 ### 3.1 Scheduled Scanning (Backend)
 
-- [ ] Background scheduler (APScheduler or similar)
+- [x] Background scheduler (APScheduler or similar)
   - Configurable interval (default: hourly)
   - Detect configuration drift between scans
-- [ ] Store scan history in SQLite for trend tracking
-- [ ] `GET /api/v1/scans` - scan history endpoint
+- [x] Store scan history in SQLite for trend tracking
+- [x] `GET /api/v1/scans` - scan history endpoint
 
 ### 3.2 Notifications & Alerts (Backend)
 
-- [ ] **Email notifications** (SMTP config in settings)
+- [x] **Email notifications** (SMTP config in settings)
   - Risk level escalation (e.g., Safe -> At Risk)
   - Weekly safety summary (opt-in)
-- [ ] **Webhook notifications**
+- [x] **Webhook notifications**
   - Slack, Discord, generic webhook URL
   - Configurable event filters
-- [ ] **API endpoints**
+- [x] **API endpoints**
   - `GET /api/v1/settings/notifications` - notification config
   - `PUT /api/v1/settings/notifications` - update notification config
   - `POST /api/v1/settings/notifications/test` - send test notification
 
 ### 3.3 Monitoring Exports (Backend)
 
-- [ ] **Prometheus metrics endpoint** (`GET /metrics`)
+- [x] **Prometheus metrics endpoint** (`GET /metrics`)
   - Risk scores per category
   - Scan count, fix count, active alerts
-- [ ] **Structured logging** to stdout (JSON format)
+- [x] **Structured logging** to stdout (JSON format)
   - Compatible with Loki/ELK ingestion
-- [ ] Document Grafana dashboard example in docs
+- [x] Document Grafana dashboard example in docs
 
 ### 3.4 OpenClaw Skill (Backend + Skill Package)
 
-- [ ] **Internal API** for skill consumption
+- [x] **Internal API** for skill consumption
   - `GET /api/v1/skill/status` - plain-language safety summary
   - `GET /api/v1/skill/actions` - top 3 recommended actions
-- [ ] **Reference OpenClaw skill** (`skill/clawsafe_skill.py`)
+- [x] **Reference OpenClaw skill** (`skill/clawsafe_skill.py`)
   - Responds to "Is it safe?" queries
   - Returns non-technical summary with suggested actions
-- [ ] Skill installation instructions in docs
+- [x] Skill installation instructions in docs
 
 ### 3.5 Advanced Settings - Integrations Tab (Frontend)
 
-- [ ] Metrics endpoint URL display (read-only)
-- [ ] Log output format selector
-- [ ] Webhook URL configuration (add/remove/test)
-- [ ] Email notification settings
-- [ ] Notification event filter checkboxes
+- [x] Metrics endpoint URL display (read-only)
+- [x] Log output format selector
+- [x] Webhook URL configuration (add/remove/test)
+- [x] Email notification settings
+- [x] Notification event filter checkboxes
 
 ## Acceptance Criteria
 
