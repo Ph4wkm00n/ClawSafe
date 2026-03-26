@@ -1,0 +1,35 @@
+{
+  "name": "clawsafe-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "next": "^15.3.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.4.0",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.25.0",
+    "eslint-config-next": "^15.3.0",
+    "jsdom": "^26.1.0",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.1.0"
+  }
+}

@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "${CLAWSAFE_PORT:-8000}:8000"
+    environment:
+      - CLAWSAFE_DATABASE_PATH=/data/clawsafe.db
+      - CLAWSAFE_OPENCLAW_CONFIG_PATH=/etc/openclaw/config.yaml
+      - CLAWSAFE_FRONTEND_URL=http://localhost:3000
+    volumes:
+      - clawsafe-data:/data
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  clawsafe-data:

@@ -1,0 +1,15 @@
+# SMB overlay — expose metrics, add log volume
+services:
+  backend:
+    ports:
+      - "${CLAWSAFE_PORT:-8000}:8000"
+      - "${CLAWSAFE_METRICS_PORT:-9090}:9090"
+    volumes:
+      - clawsafe-data:/data
+      - clawsafe-logs:/var/log/clawsafe
+    environment:
+      - CLAWSAFE_LOG_PATH=/var/log/clawsafe/clawsafe.log
+
+volumes:
+  clawsafe-data:
+  clawsafe-logs:

@@ -1,0 +1,115 @@
+/* ClawSafe Design Tokens */
+
+:root {
+  /* Playful Light (default) */
+  --color-bg-primary: #F8FAFB;
+  --color-bg-card: #FFFFFF;
+  --color-bg-accent: #E0F7FA;
+  --color-bg-sidebar: #FFFFFF;
+
+  --color-text-primary: #1A2B3C;
+  --color-text-secondary: #5A6B7C;
+  --color-text-muted: #8A9BAC;
+
+  --color-brand-primary: #26A69A;
+  --color-brand-secondary: #FF8A65;
+
+  --color-status-safe: #43A047;
+  --color-status-safe-bg: #E8F5E9;
+  --color-status-attention: #FB8C00;
+  --color-status-attention-bg: #FFF3E0;
+  --color-status-risk: #E53935;
+  --color-status-risk-bg: #FFEBEE;
+
+  --color-border: #E0E6ED;
+  --color-shadow: rgba(0, 0, 0, 0.08);
+  --color-backdrop: rgba(0, 0, 0, 0.4);
+
+  /* Typography */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.5rem;
+  --font-size-2xl: 2rem;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-8: 3rem;
+
+  /* Border Radius (Playful) */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-full: 9999px;
+
+  /* Shadows (Playful) */
+  --shadow-sm: 0 1px 3px var(--color-shadow);
+  --shadow-md: 0 4px 12px var(--color-shadow);
+  --shadow-lg: 0 8px 24px var(--color-shadow);
+
+  /* Layout */
+  --sidebar-width: 240px;
+}
+
+/* Dark mode */
+[data-mode="dark"] {
+  --color-bg-primary: #1A1E2E;
+  --color-bg-card: #242838;
+  --color-bg-accent: #1A2E2C;
+  --color-bg-sidebar: #161A28;
+
+  --color-text-primary: #E8ECF0;
+  --color-text-secondary: #A0AABB;
+  --color-text-muted: #6A7A8B;
+
+  --color-brand-primary: #4DB6AC;
+  --color-brand-secondary: #FFAB91;
+
+  --color-status-safe: #66BB6A;
+  --color-status-safe-bg: #1B3A1B;
+  --color-status-attention: #FFA726;
+  --color-status-attention-bg: #3A2E1B;
+  --color-status-risk: #EF5350;
+  --color-status-risk-bg: #3A1B1B;
+
+  --color-border: #2E3448;
+  --color-shadow: rgba(0, 0, 0, 0.3);
+}
+
+/* Minimal theme */
+[data-theme="minimal"] {
+  --color-bg-accent: #F5F5F5;
+  --color-brand-primary: #546E7A;
+  --color-brand-secondary: #78909C;
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  --shadow-sm: 0 1px 2px var(--color-shadow);
+  --shadow-md: 0 2px 8px var(--color-shadow);
+  --shadow-lg: 0 4px 16px var(--color-shadow);
+}
+
+/* Minimal + Dark */
+[data-theme="minimal"][data-mode="dark"] {
+  --color-bg-primary: #1C1C1E;
+  --color-bg-card: #2C2C2E;
+  --color-bg-accent: #242426;
+  --color-bg-sidebar: #1A1A1C;
+
+  --color-brand-primary: #78909C;
+  --color-brand-secondary: #90A4AE;
+}
