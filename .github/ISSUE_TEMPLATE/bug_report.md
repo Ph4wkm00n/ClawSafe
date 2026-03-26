@@ -2,8 +2,9 @@
 name: Bug Report
 about: Report a bug in ClawSafe
 title: "[Bug] "
-labels: bug
+labels: bug, enhancement
 assignees: ''
+
 ---
 
 **Describe the bug**
