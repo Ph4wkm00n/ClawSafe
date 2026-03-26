@@ -102,7 +102,8 @@ make prod
 - [API Reference](docs/api-reference.md) — All endpoints with auth requirements
 - [Security Guide](docs/security.md) — Auth, HTTPS, SSRF protection, container security
 - [Operations Guide](docs/operations.md) — Backup, upgrade, monitoring, troubleshooting
-- [Contributing](docs/contributing.md) — Development setup, code style, PR guidelines
+- [Contributing](docs/contributing.md)
+- [Future Roadmap](docs/ROADMAP.md) — Development setup, code style, PR guidelines
 
 ---
 

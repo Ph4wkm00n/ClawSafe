@@ -155,3 +155,4 @@ cd frontend && npm install && npm run dev
 - `docs/security.md` — Authentication, HTTPS, input validation, container security
 - `docs/operations.md` — Backup/restore, upgrades, monitoring, troubleshooting
 - `docs/contributing.md` — Development setup, code style, PR guidelines
+- `docs/ROADMAP.md` — Future roadmap (v1.2 through v3.0 + SaaS)
