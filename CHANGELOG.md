@@ -1,5 +1,56 @@
 # Changelog
 
+## [2.0.0] - 2026-03-26
+
+### Added
+- Secrets scanning (10 regex patterns for AWS, GitHub, JWT, private keys, DB URLs)
+- Custom YAML rule engine for organization-specific detection rules
+- Runtime monitoring (process, network connections, file integrity, resource alerts)
+- CIS Benchmark (8 controls) and SOC 2 (6 criteria) compliance mapping
+- Compliance score dashboard and gap analysis with remediation guidance
+- CVSS 3.1 base score computation with vector components
+- Combined risk analysis (correlated patterns worse than sum of parts)
+- Risk trends from scan history and blast radius estimation
+- Plugin SDK (ScannerPlugin, FixerPlugin, NotifierPlugin base classes)
+- Plugin auto-discovery from /plugins/ directory
+- 13 new security intelligence API endpoints
+- Slack Block Kit and Microsoft Teams Adaptive Card webhook formatting
+- Webhook HMAC-SHA256 signatures for delivery verification
+- Do-not-disturb hours and digest mode for notifications
+- Request latency histogram and scan duration tracking (Prometheus)
+- Grafana dashboard JSON with 9 panels
+- Data retention purge, scheduled backup, CSV/JSON export APIs
+- Multi-instance aggregation and per-instance status endpoints
+- User accounts with JWT authentication and RBAC (3 roles)
+- Audit trail with user/action/resource tracking
+- Login page with registration support
+- Policy version history and YAML export
+- Keyboard shortcuts (R/D/I/A/S)
+- Spanish locale foundation for i18n
+- PostgreSQL support with connection pooling
+- Database abstraction layer with migration system
+- Helm chart for Kubernetes deployment
+- Container/CVE scanning via Trivy integration
+
+### Security Hardening
+- PBKDF2-SHA256 password hashing (100k iterations, replaces SHA-256)
+- JWT secret no longer falls back to hardcoded value
+- Auth bypass prevented (require API key unless debug mode)
+- SQL injection prevention via column whitelist in dynamic queries
+- Config path validation prevents path traversal in instance management
+- Secrets scanner file size limits and symlink-safe directory walking
+- Auto-rollback on fix failure (restores backup automatically)
+- Security endpoints require authentication
+- Audit endpoint requires authentication
+- Caddy security headers (HSTS, X-Frame-Options, X-Content-Type-Options)
+- Helm security contexts (runAsNonRoot, drop ALL capabilities)
+- Production/dev requirements split (requirements.txt + requirements-dev.txt)
+- Pre-commit hooks (.pre-commit-config.yaml)
+
+### Changed
+- Version bumped to 2.0.0
+- App version updated throughout (main.py, schemas.py)
+
 ## [1.1.0] - 2026-03-26
 
 ### Added

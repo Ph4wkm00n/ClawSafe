@@ -3,6 +3,17 @@
 # For local development, use :80 instead
 
 :80 {
+    # Security headers
+    header {
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        X-Frame-Options "DENY"
+        X-Content-Type-Options "nosniff"
+        X-XSS-Protection "1; mode=block"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "camera=(), microphone=(), geolocation=()"
+        -Server
+    }
+
     # Frontend
     reverse_proxy frontend:3000
 
@@ -11,8 +22,13 @@
         reverse_proxy backend:8000
     }
 
-    # Prometheus metrics
+    # Prometheus metrics (restrict in production)
     handle_path /metrics {
+        reverse_proxy backend:8000
+    }
+
+    # WebSocket
+    handle_path /ws {
         reverse_proxy backend:8000
     }
 }

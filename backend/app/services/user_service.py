@@ -15,22 +15,42 @@ from app.models.user import UserCreate, UserList, UserResponse
 logger = logging.getLogger(__name__)
 
 VALID_ROLES = {"admin", "officer", "viewer"}
+_runtime_secret: str = ""
+
+
+def _get_jwt_secret() -> str:
+    """Get JWT secret. Generates a random one for dev if not configured."""
+    global _runtime_secret
+    if settings.jwt_secret:
+        return settings.jwt_secret
+    if not _runtime_secret:
+        _runtime_secret = secrets.token_hex(32)
+        logger.warning("JWT_SECRET not set. Generated ephemeral secret (tokens won't survive restart).")
+    return _runtime_secret
 
 
 def _hash_password(password: str) -> str:
-    """Hash password using SHA-256 with salt. Simple but effective."""
+    """Hash password using PBKDF2-SHA256 with random salt (100k iterations)."""
     salt = secrets.token_hex(16)
-    hashed = hashlib.sha256(f"{salt}:{password}".encode()).hexdigest()
-    return f"{salt}:{hashed}"
+    hashed = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100_000).hex()
+    return f"pbkdf2:{salt}:{hashed}"
 
 
 def _verify_password(password: str, stored_hash: str) -> bool:
     """Verify password against stored hash."""
     try:
-        salt, hashed = stored_hash.split(":", 1)
-        expected = hashlib.sha256(f"{salt}:{password}".encode()).hexdigest()
-        return hmac.compare_digest(hashed, expected)
-    except ValueError:
+        parts = stored_hash.split(":")
+        if parts[0] == "pbkdf2" and len(parts) == 3:
+            salt, hashed = parts[1], parts[2]
+            expected = hashlib.pbkdf2_hmac("sha256", password.encode(), salt.encode(), 100_000).hex()
+            return hmac.compare_digest(hashed, expected)
+        elif len(parts) == 2:
+            # Legacy SHA-256 format (backward compatible)
+            salt, hashed = parts
+            expected = hashlib.sha256(f"{salt}:{password}".encode()).hexdigest()
+            return hmac.compare_digest(hashed, expected)
+        return False
+    except (ValueError, IndexError):
         return False
 
 
@@ -52,7 +72,7 @@ def _create_jwt(user_id: str, email: str, role: str) -> str:
     payload = base64.urlsafe_b64encode(json.dumps(payload_data).encode()).decode().rstrip("=")
     signing_input = f"{header}.{payload}"
     signature = hmac.new(
-        (settings.jwt_secret or "dev-secret").encode(),
+        _get_jwt_secret().encode(),
         signing_input.encode(),
         hashlib.sha256,
     ).hexdigest()
@@ -75,7 +95,7 @@ def decode_jwt(token: str) -> dict | None:
         # Verify signature
         signing_input = f"{header}.{payload}"
         expected_sig = hmac.new(
-            (settings.jwt_secret or "dev-secret").encode(),
+            _get_jwt_secret().encode(),
             signing_input.encode(),
             hashlib.sha256,
         ).hexdigest()

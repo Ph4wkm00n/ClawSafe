@@ -73,15 +73,21 @@ async def update_instance(instance_id: str, data: InstanceUpdate) -> InstanceRes
     if existing is None:
         return None
 
+    ALLOWED_UPDATE_FIELDS = {"name", "config_path", "tags", "active"}
     updates = {}
     if data.name is not None:
         updates["name"] = data.name
     if data.config_path is not None:
+        from app.core.auth import validate_config_path
+        validate_config_path(data.config_path)
         updates["config_path"] = data.config_path
     if data.tags is not None:
         updates["tags"] = data.tags
     if data.active is not None:
         updates["active"] = 1 if data.active else 0
+
+    # Whitelist columns to prevent SQL injection via key names
+    updates = {k: v for k, v in updates.items() if k in ALLOWED_UPDATE_FIELDS}
 
     if updates:
         set_clause = ", ".join(f"{k} = ?" for k in updates)
