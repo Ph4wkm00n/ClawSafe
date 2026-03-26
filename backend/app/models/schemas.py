@@ -76,4 +76,47 @@ class UserSettings(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str = "ok"
-    version: str = "0.1.0"
+    version: str = "0.2.0"
+
+
+class FixResult(BaseModel):
+    success: bool
+    action_id: str
+    message: str
+    backup_id: int | None = None
+
+
+class BackupEntry(BaseModel):
+    id: int
+    timestamp: str
+    config_path: str
+    backup_path: str
+    action_id: str
+    status: str
+
+
+class BackupList(BaseModel):
+    backups: list[BackupEntry]
+
+
+class PolicyConfig(BaseModel):
+    version: str = "1"
+    name: str = "default"
+    network: dict = {}
+    tools: dict = {}
+    data: dict = {}
+    auth: dict = {}
+    monitoring: dict = {}
+    integrations: dict = {}
+
+
+class PolicyValidation(BaseModel):
+    valid: bool
+    errors: list[str] = []
+
+
+class PolicyResponse(BaseModel):
+    id: int | None = None
+    name: str
+    active: bool
+    config: PolicyConfig

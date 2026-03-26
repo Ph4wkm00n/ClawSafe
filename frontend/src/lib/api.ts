@@ -5,6 +5,11 @@ import type {
   CategoryName,
   Recommendation,
   UserSettings,
+  FixResult,
+  BackupEntry,
+  PolicyConfig,
+  PolicyResponse,
+  PolicyValidation,
 } from "./types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -53,5 +58,35 @@ export function updateSettings(
   return fetchAPI<UserSettings>("/api/v1/settings", {
     method: "PUT",
     body: JSON.stringify(settings),
+  });
+}
+
+export function applyFix(actionId: string): Promise<FixResult> {
+  return fetchAPI<FixResult>(`/api/v1/fix/${actionId}`, { method: "POST" });
+}
+
+export function undoFix(actionId: string): Promise<FixResult> {
+  return fetchAPI<FixResult>(`/api/v1/fix/${actionId}/undo`, { method: "POST" });
+}
+
+export function getBackups(): Promise<{ backups: BackupEntry[] }> {
+  return fetchAPI<{ backups: BackupEntry[] }>("/api/v1/backups");
+}
+
+export function getPolicy(): Promise<PolicyResponse> {
+  return fetchAPI<PolicyResponse>("/api/v1/policy");
+}
+
+export function updatePolicy(config: PolicyConfig): Promise<PolicyResponse> {
+  return fetchAPI<PolicyResponse>("/api/v1/policy", {
+    method: "PUT",
+    body: JSON.stringify(config),
+  });
+}
+
+export function validatePolicy(config: PolicyConfig): Promise<PolicyValidation> {
+  return fetchAPI<PolicyValidation>("/api/v1/policy/validate", {
+    method: "POST",
+    body: JSON.stringify(config),
   });
 }

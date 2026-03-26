@@ -25,6 +25,23 @@ CREATE TABLE IF NOT EXISTS settings (
     key TEXT PRIMARY KEY,
     value TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS backups (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
+    config_path TEXT NOT NULL,
+    backup_path TEXT NOT NULL,
+    action_id TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'active'
+);
+
+CREATE TABLE IF NOT EXISTS policies (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
+    name TEXT NOT NULL,
+    content_json TEXT NOT NULL,
+    active INTEGER NOT NULL DEFAULT 0
+);
 """
 
 

@@ -60,6 +60,7 @@ const strings: Record<string, string> = {
   "fix.success": "Done!",
   "fix.error": "Something went wrong. The fix couldn't be applied.",
   "fix.try_again": "Try again",
+  "fix.applying": "Applying fix...",
 
   // Settings
   "settings.title": "Advanced Settings",
@@ -68,6 +69,35 @@ const strings: Record<string, string> = {
   "settings.tab.tools": "Tools & Skills",
   "settings.tab.data": "Data & Files",
   "settings.tab.integrations": "Integrations",
+
+  // Settings - Network
+  "settings.network.bind": "Bind Address",
+  "settings.network.bind_desc": "Which network interfaces OpenClaw listens on.",
+  "settings.network.bind_tooltip": "127.0.0.1 means only this machine can reach OpenClaw. 0.0.0.0 means any device on your network (or the internet) could connect.",
+  "settings.network.cidrs": "Allowed CIDRs",
+  "settings.network.cidrs_desc": "IP ranges allowed to connect.",
+  "settings.network.cidrs_tooltip": "CIDR notation like 192.168.1.0/24 means all devices on your local network. Fewer ranges = more secure.",
+  "settings.network.vpn": "VPN-Only Mode",
+  "settings.network.vpn_desc": "Only allow connections through a VPN.",
+  "settings.network.vpn_tooltip": "When enabled, OpenClaw will only accept connections that come through a VPN tunnel, adding an extra layer of security.",
+  "settings.network.port": "Port",
+  "settings.network.port_desc": "Port OpenClaw listens on.",
+
+  // Settings - Tools
+  "settings.tools.block_high_risk": "Block all high-risk",
+  "settings.tools.name": "Skill",
+  "settings.tools.risk": "Risk Level",
+  "settings.tools.status": "Status",
+
+  // Settings - Data
+  "settings.data.mounts": "Mount Paths",
+  "settings.data.backup": "Auto-Backup",
+  "settings.data.backup_desc": "Automatically back up config before changes.",
+  "settings.data.frequency": "Backup Frequency",
+  "settings.data.frequency_desc": "How often to create backups.",
+
+  // Settings - Integrations
+  "settings.integrations.coming_soon": "Integrations will be available in v0.3 (metrics, webhooks, email alerts).",
 
   // Appearance
   "appearance.title": "Appearance",
