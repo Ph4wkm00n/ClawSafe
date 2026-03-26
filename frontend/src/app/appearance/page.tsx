@@ -1,32 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
-
 import { t } from "@/i18n/en";
 import { useSettings } from "@/hooks/useSettings";
 
 export default function AppearancePage() {
   const { settings, save } = useSettings();
 
-  useEffect(() => {
-    document.documentElement.setAttribute(
-      "data-theme",
-      settings.theme === "minimal" ? "minimal" : "playful"
-    );
-    if (settings.mode === "dark") {
-      document.documentElement.setAttribute("data-mode", "dark");
-    } else if (settings.mode === "light") {
-      document.documentElement.removeAttribute("data-mode");
-    } else {
-      // System preference
-      const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      if (dark) {
-        document.documentElement.setAttribute("data-mode", "dark");
-      } else {
-        document.documentElement.removeAttribute("data-mode");
-      }
-    }
-  }, [settings.theme, settings.mode]);
+  // Theme application is handled by useSettings hook (including localStorage persistence)
 
   return (
     <div className="flex flex-col gap-8">

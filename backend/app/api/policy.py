@@ -1,5 +1,6 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
+from app.core.auth import require_auth
 from app.models.schemas import PolicyConfig, PolicyResponse, PolicyValidation
 from app.services.policy import get_active_policy, save_policy, validate_policy
 
@@ -14,7 +15,7 @@ async def get_policy():
     return policy
 
 
-@router.put("/policy", response_model=PolicyResponse)
+@router.put("/policy", response_model=PolicyResponse, dependencies=[Depends(require_auth)])
 async def update_policy(config: PolicyConfig):
     validation = validate_policy(config.model_dump())
     if not validation.valid:

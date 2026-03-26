@@ -6,15 +6,30 @@ import CategoryCards from "@/components/dashboard/CategoryCards";
 import FixFlow from "@/components/dashboard/FixFlow";
 import RecentActivity from "@/components/dashboard/RecentActivity";
 import StatusHeader from "@/components/dashboard/StatusHeader";
+import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
 import ErrorState from "@/components/ui/ErrorState";
 import { SkeletonCard, SkeletonStatus } from "@/components/ui/Skeleton";
 import { useActivity } from "@/hooks/useActivity";
+import { useSettings } from "@/hooks/useSettings";
 import { useStatus } from "@/hooks/useStatus";
+import type { UserSettings } from "@/lib/types";
 
 export default function DashboardPage() {
   const { status, loading, error, refresh } = useStatus();
   const { events, loading: activityLoading } = useActivity(5);
+  const { settings, loading: settingsLoading, save } = useSettings();
   const [activeFixId, setActiveFixId] = useState<string | null>(null);
+
+  // Show onboarding wizard if not completed
+  if (!settingsLoading && !settings.onboarding_complete) {
+    return (
+      <OnboardingWizard
+        onComplete={(partial: Partial<UserSettings>) => {
+          save({ ...settings, ...partial });
+        }}
+      />
+    );
+  }
 
   if (error) {
     return <ErrorState message={error} onRetry={refresh} />;

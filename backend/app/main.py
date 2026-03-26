@@ -6,16 +6,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.metrics import router as metrics_router
 from app.api.router import api_router
 from app.core.config import settings
+from app.core.logging import setup_logging
 from app.db.database import close_db, get_db
 from app.services.activity import seed_demo_activity
 from app.services.scheduler import start_scheduler, stop_scheduler
+
+setup_logging(settings.log_level)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await get_db()
     await seed_demo_activity()
-    await start_scheduler()
+    await start_scheduler(interval=settings.scan_interval)
     yield
     await stop_scheduler()
     await close_db()
@@ -31,8 +34,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[settings.frontend_url, "http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 app.include_router(api_router)

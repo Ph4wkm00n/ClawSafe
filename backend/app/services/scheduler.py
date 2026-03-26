@@ -1,4 +1,4 @@
-"""Scheduler service — runs periodic security scans."""
+"""Scheduler service — runs periodic security scans with backoff."""
 
 from __future__ import annotations
 
@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 
+from app.services.metrics import update_metrics
 from app.services.scanner import get_demo_findings, scan_openclaw
 from app.services.scoring import compute_status
 
@@ -13,10 +14,18 @@ logger = logging.getLogger(__name__)
 
 _task: asyncio.Task | None = None
 _running = False
+_consecutive_failures = 0
+MAX_BACKOFF_MULTIPLIER = 4
+
+
+def is_scheduler_running() -> bool:
+    return _running and _task is not None and not _task.done()
 
 
 async def run_scan() -> None:
-    """Execute a scan, store results, and check for drift."""
+    """Execute a scan, store results, update metrics, and check for drift."""
+    global _consecutive_failures
+
     from app.db.database import get_db
     from app.services.activity import log_event
     from app.services.notifications import notify_escalation
@@ -26,6 +35,8 @@ async def run_scan() -> None:
         findings = get_demo_findings()
 
     status = compute_status(findings)
+    update_metrics(status)
+
     db = await get_db()
 
     # Get previous scan status
@@ -51,17 +62,24 @@ async def run_scan() -> None:
         )
         await notify_escalation(prev_status, status.status.value)
 
+    _consecutive_failures = 0
     logger.info("Scan complete: status=%s score=%d", status.status.value, status.score)
 
 
 async def _scan_loop(interval: int) -> None:
-    global _running
+    global _running, _consecutive_failures
     while _running:
         try:
             await run_scan()
         except Exception as e:
-            logger.error("Scan failed: %s", e)
-        await asyncio.sleep(interval)
+            _consecutive_failures += 1
+            logger.error("Scan failed (attempt %d): %s", _consecutive_failures, e)
+
+        # Exponential backoff on failures, capped at MAX_BACKOFF_MULTIPLIER * interval
+        backoff = min(2**_consecutive_failures, MAX_BACKOFF_MULTIPLIER) if _consecutive_failures > 0 else 1
+        sleep_time = interval * backoff
+        logger.debug("Next scan in %ds (backoff=%dx)", sleep_time, backoff)
+        await asyncio.sleep(sleep_time)
 
 
 async def start_scheduler(interval: int = 3600) -> None:

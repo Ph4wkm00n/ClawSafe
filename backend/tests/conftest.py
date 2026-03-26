@@ -4,6 +4,8 @@ import pytest
 from httpx import ASGITransport, AsyncClient
 
 os.environ["CLAWSAFE_DATABASE_PATH"] = ":memory:"
+os.environ["CLAWSAFE_API_KEY"] = ""
+os.environ["CLAWSAFE_DEMO_MODE"] = "true"
 
 from app.main import app
 

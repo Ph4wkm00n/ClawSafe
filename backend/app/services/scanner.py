@@ -2,19 +2,27 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import yaml
 
 from app.core.config import settings
 
+logger = logging.getLogger(__name__)
+
 
 def _load_openclaw_config() -> dict | None:
     path = Path(settings.openclaw_config_path)
     if not path.exists():
         return None
-    with open(path) as f:
-        return yaml.safe_load(f)
+    try:
+        with open(path) as f:
+            data = yaml.safe_load(f)
+            return data if isinstance(data, dict) else None
+    except Exception as e:
+        logger.error("Failed to load OpenClaw config at %s: %s", path, e)
+        return None
 
 
 def _check_network(config: dict | None) -> dict:
@@ -40,6 +48,8 @@ def _check_tools(config: dict | None) -> dict:
     if config is None:
         return {"skills": [], "high_risk_enabled": True, "total": 0}
     skills = config.get("skills", config.get("tools", []))
+    if not isinstance(skills, list):
+        skills = []
     high_risk = [
         s for s in skills
         if isinstance(s, dict) and s.get("risk", "low") in ("high", "critical")
@@ -57,7 +67,9 @@ def _check_data(config: dict | None) -> dict:
     if config is None:
         return {"mounts": [], "broad_access": False}
     mounts = config.get("mounts", config.get("volumes", []))
-    sensitive = ["/", "/etc", "/root", "/home"]
+    if not isinstance(mounts, list):
+        mounts = []
+    sensitive = {"/", "/etc", "/root", "/home"}
     broad = any(
         isinstance(m, str) and m.rstrip("/") in sensitive
         for m in mounts
@@ -75,7 +87,12 @@ def _check_auth(config: dict | None) -> dict:
 
 
 def _check_updates() -> dict:
-    return {"up_to_date": True, "current_version": "0.1.0", "latest_version": "0.1.0"}
+    """Check for version updates. Currently compares static versions."""
+    return {
+        "up_to_date": True,
+        "current_version": "1.0.0",
+        "latest_version": "1.0.0",
+    }
 
 
 def scan_openclaw() -> dict:
@@ -121,6 +138,6 @@ def get_demo_findings() -> dict:
         "updates": {
             "up_to_date": False,
             "current_version": "0.0.9",
-            "latest_version": "0.1.0",
+            "latest_version": "1.0.0",
         },
     }

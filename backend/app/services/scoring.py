@@ -180,14 +180,52 @@ OVERALL_SUBTITLES = {
 }
 
 
-def compute_status(findings: dict) -> OverallStatus:
-    """Compute per-category and overall safety status from raw findings."""
+def _apply_policy_adjustments(
+    categories: list[CategoryStatus], policy: dict | None
+) -> list[CategoryStatus]:
+    """Adjust scores based on active policy rules."""
+    if not policy:
+        return categories
+
+    adjusted = []
+    for cat in categories:
+        extra = 0
+        if cat.category == CategoryName.tools:
+            rules = policy.get("tools", {}).get("rules", [])
+            for rule in rules:
+                if not isinstance(rule, dict):
+                    continue
+                if rule.get("action") == "block" and rule.get("risk") in ("high", "critical"):
+                    # Policy says block high-risk → if they're still enabled, penalize more
+                    pass  # Already handled by base scoring
+                elif rule.get("action") == "allow" and rule.get("risk") in ("high", "critical"):
+                    # Policy explicitly allows high-risk tools → increase risk
+                    extra += 15
+        elif cat.category == CategoryName.network:
+            net_policy = policy.get("network", {})
+            if net_policy.get("vpn_only") and not cat.description.lower().startswith("your"):
+                extra += 10  # VPN required but not enforced
+        if extra > 0:
+            new_score = min(cat.score + extra, 100)
+            new_level = _level_from_score(new_score)
+            adjusted.append(cat.model_copy(update={"score": new_score, "status": new_level}))
+        else:
+            adjusted.append(cat)
+    return adjusted
+
+
+def compute_status(findings: dict, policy: dict | None = None) -> OverallStatus:
+    """Compute per-category and overall safety status from raw findings.
+
+    If a policy dict is provided, scoring is adjusted based on policy rules.
+    """
     categories = [
         _score_network(findings),
         _score_tools(findings),
         _score_data(findings),
         _score_updates(findings),
     ]
+    categories = _apply_policy_adjustments(categories, policy)
 
     overall_score = max(c.score for c in categories) if categories else 0
     overall_level = _level_from_score(overall_score)
