@@ -46,13 +46,12 @@ def validate_webhook_url(url: str) -> str | None:
 
 async def load_config() -> NotificationConfig:
     db = await get_db()
-    cursor = await db.execute(
+    row = await db.fetch_one(
         "SELECT value FROM settings WHERE key = ?", (SETTINGS_KEY,)
     )
-    row = await cursor.fetchone()
     if row is None:
         return NotificationConfig()
-    return NotificationConfig.model_validate_json(row[0])
+    return NotificationConfig.model_validate_json(row["value"])
 
 
 async def save_config(config: NotificationConfig) -> None:
@@ -103,3 +102,9 @@ async def notify_escalation(old_status: str, new_status: str) -> None:
     for webhook in config.webhooks:
         if "escalation" in webhook.events:
             await send_webhook(webhook.url, payload)
+
+    # Send email notification if configured
+    if config.email_enabled and config.email_address:
+        from app.services.email import send_escalation_email
+
+        await send_escalation_email(config.email_address, old_status, new_status)

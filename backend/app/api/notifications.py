@@ -43,3 +43,15 @@ async def test_notification(req: TestWebhookRequest):
         raise HTTPException(status_code=400, detail=error)
     success = await send_test_notification(req.url)
     return TestWebhookResponse(success=success)
+
+
+@router.post("/settings/notifications/test-email", response_model=TestWebhookResponse, dependencies=[Depends(require_auth)])
+async def test_email_notification():
+    """Send a test email to the configured email address."""
+    config = await load_config()
+    if not config.email_address:
+        raise HTTPException(status_code=400, detail="No email address configured.")
+    from app.services.email import send_test_email
+
+    success = await send_test_email(config.email_address)
+    return TestWebhookResponse(success=success)

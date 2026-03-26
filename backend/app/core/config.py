@@ -13,6 +13,19 @@ class Settings(BaseSettings):
     scan_interval: int = 3600
     demo_mode: bool = True
     log_level: str = "INFO"
+    db_type: str = "sqlite"
+    db_url: str = ""
+    db_pool_min: int = 2
+    db_pool_max: int = 10
+    trivy_enabled: bool = False
+    docker_socket: str = "/var/run/docker.sock"
+    jwt_secret: str = ""
+    jwt_expire_minutes: int = 1440
+    smtp_host: str = ""
+    smtp_port: int = 587
+    smtp_user: str = ""
+    smtp_password: str = ""
+    smtp_from: str = ""
 
     model_config = {"env_prefix": "CLAWSAFE_"}
 

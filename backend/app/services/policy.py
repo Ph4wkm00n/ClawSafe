@@ -65,10 +65,9 @@ def validate_policy(data: dict) -> PolicyValidation:
 
 async def get_active_policy() -> PolicyResponse | None:
     db = await get_db()
-    cursor = await db.execute(
+    row = await db.fetch_one(
         "SELECT id, name, content_json, active FROM policies WHERE active = 1 LIMIT 1"
     )
-    row = await cursor.fetchone()
     if row is None:
         # Try loading default from disk
         default_path = POLICIES_DIR / "default.yaml"
@@ -77,17 +76,17 @@ async def get_active_policy() -> PolicyResponse | None:
             return PolicyResponse(id=None, name=config.name, active=True, config=config)
         return None
 
-    config = PolicyConfig.model_validate_json(row[2])
-    return PolicyResponse(id=row[0], name=row[1], active=bool(row[3]), config=config)
+    config = PolicyConfig.model_validate_json(row["content_json"])
+    return PolicyResponse(id=row["id"], name=row["name"], active=bool(row["active"]), config=config)
 
 
 async def save_policy(config: PolicyConfig) -> PolicyResponse:
     db = await get_db()
     # Deactivate existing active policies
     await db.execute("UPDATE policies SET active = 0 WHERE active = 1")
-    cursor = await db.execute(
+    new_id = await db.insert_returning_id(
         "INSERT INTO policies (name, content_json, active) VALUES (?, ?, 1)",
         (config.name, config.model_dump_json()),
     )
     await db.commit()
-    return PolicyResponse(id=cursor.lastrowid, name=config.name, active=True, config=config)
+    return PolicyResponse(id=new_id, name=config.name, active=True, config=config)

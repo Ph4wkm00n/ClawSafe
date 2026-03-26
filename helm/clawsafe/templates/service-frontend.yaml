@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "clawsafe.fullname" . }}-frontend
+  labels:
+    {{- include "clawsafe.labels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend
+spec:
+  type: ClusterIP
+  ports:
+    - port: {{ .Values.frontend.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "clawsafe.selectorLabels" . | nindent 4 }}
+    app.kubernetes.io/component: frontend

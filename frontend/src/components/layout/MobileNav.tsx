@@ -7,9 +7,9 @@ import { t } from "@/i18n/en";
 
 const NAV_ITEMS = [
   { href: "/", label: t("nav.dashboard"), icon: "🛡️" },
+  { href: "/instances", label: t("nav.instances"), icon: "🖥️" },
   { href: "/activity", label: t("nav.activity"), icon: "📋" },
   { href: "/settings", label: t("nav.settings"), icon: "⚙️" },
-  { href: "/appearance", label: t("nav.appearance"), icon: "🎨" },
   { href: "/about", label: t("nav.about"), icon: "❓" },
 ];
 

@@ -5,6 +5,8 @@ const strings: Record<string, string> = {
 
   // Navigation
   "nav.dashboard": "Dashboard",
+  "nav.instances": "Instances",
+  "nav.vulnerabilities": "Vulnerabilities",
   "nav.activity": "Activity",
   "nav.settings": "Advanced Settings",
   "nav.appearance": "Appearance",
@@ -105,6 +107,15 @@ const strings: Record<string, string> = {
   "settings.integrations.webhooks_desc": "Notification endpoints for Slack, Discord, etc.",
   "settings.integrations.email": "Email Notifications",
   "settings.integrations.email_desc": "Send alerts via email when risk level changes.",
+  "settings.integrations.email_address": "Email address",
+  "settings.integrations.test_email": "Send test",
+  "settings.integrations.sending": "Sending...",
+  "settings.integrations.email_test_sent": "Test email sent successfully.",
+  "settings.integrations.email_test_failed": "Failed to send test email. Check SMTP configuration.",
+  "settings.integrations.test_success": "Test notification sent successfully.",
+  "settings.integrations.test_failed": "Failed to send test notification.",
+  "settings.saved": "Settings saved",
+  "settings.save_failed": "Failed to save settings",
 
   // Appearance
   "appearance.title": "Appearance",
@@ -118,6 +129,18 @@ const strings: Record<string, string> = {
   "appearance.mode.light": "Light",
   "appearance.mode.dark": "Dark",
 
+  // Instances
+  "instances.title": "Instances",
+  "instances.add": "Add Instance",
+  "instances.remove": "Remove",
+  "instances.added": "Instance added successfully.",
+  "instances.add_failed": "Failed to add instance.",
+  "instances.removed": "Instance removed.",
+  "instances.remove_failed": "Cannot remove this instance.",
+  "instances.name_placeholder": "Instance name (e.g., Production)",
+  "instances.path_placeholder": "/etc/openclaw/config.yaml",
+  "instances.save": "Save",
+
   // Activity
   "activity.title": "Activity",
   "activity.view_all": "View all activity",
@@ -128,6 +151,14 @@ const strings: Record<string, string> = {
   "about.version": "Version",
   "about.docs": "Documentation",
   "about.github": "GitHub",
+
+  // Vulnerabilities
+  "vulns.title": "Vulnerabilities",
+  "vulns.containers": "Containers",
+  "vulns.total_vulns": "Vulnerabilities",
+  "vulns.critical": "Critical",
+  "vulns.no_containers": "No Docker containers detected. Is Docker running?",
+  "vulns.no_vulns": "No vulnerabilities found in this image.",
 
   // Common
   "common.back": "Back",

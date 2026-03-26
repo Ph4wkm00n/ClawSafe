@@ -130,12 +130,11 @@ async def undo_fix(action_id: str) -> FixResult:
     from app.db.database import get_db
 
     db = await get_db()
-    cursor = await db.execute(
+    row = await db.fetch_one(
         "SELECT id FROM backups WHERE action_id = ? AND status = 'active' "
         "ORDER BY timestamp DESC LIMIT 1",
         (action_id,),
     )
-    row = await cursor.fetchone()
     if row is None:
         return FixResult(
             success=False,
@@ -143,7 +142,7 @@ async def undo_fix(action_id: str) -> FixResult:
             message="No backup found to restore.",
         )
 
-    success = await restore_backup(row[0])
+    success = await restore_backup(row["id"])
     if success:
         await log_event("fix_undone", f"Undid fix: {action_id}", "safe")
         return FixResult(success=True, action_id=action_id, message="Fix undone. Previous config restored.")

@@ -10,3 +10,5 @@ pytest-asyncio==0.25.0
 httpx==0.28.1
 apscheduler==4.0.0a5
 prometheus-client==0.21.1
+aiosmtplib==3.0.2
+asyncpg==0.30.0

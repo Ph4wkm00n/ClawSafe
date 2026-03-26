@@ -42,7 +42,7 @@ async def create_backup(config_path: str, action_id: str) -> int:
         raise
 
     db = await get_db()
-    cursor = await db.execute(
+    backup_id = await db.insert_returning_id(
         "INSERT INTO backups (config_path, backup_path, action_id) VALUES (?, ?, ?)",
         (str(src), str(dest), safe_id),
     )
@@ -50,24 +50,23 @@ async def create_backup(config_path: str, action_id: str) -> int:
 
     await _cleanup_old_backups()
 
-    return cursor.lastrowid or 0
+    return backup_id
 
 
 async def list_backups() -> BackupList:
     db = await get_db()
-    cursor = await db.execute(
+    rows = await db.fetch_all(
         "SELECT id, timestamp, config_path, backup_path, action_id, status "
         "FROM backups ORDER BY timestamp DESC"
     )
-    rows = await cursor.fetchall()
     entries = [
         BackupEntry(
-            id=row[0],
-            timestamp=row[1],
-            config_path=row[2],
-            backup_path=row[3],
-            action_id=row[4],
-            status=row[5],
+            id=row["id"],
+            timestamp=row["timestamp"],
+            config_path=row["config_path"],
+            backup_path=row["backup_path"],
+            action_id=row["action_id"],
+            status=row["status"],
         )
         for row in rows
     ]
@@ -77,14 +76,13 @@ async def list_backups() -> BackupList:
 async def restore_backup(backup_id: int) -> bool:
     """Restore config from a backup. Returns True on success."""
     db = await get_db()
-    cursor = await db.execute(
+    row = await db.fetch_one(
         "SELECT config_path, backup_path FROM backups WHERE id = ?", (backup_id,)
     )
-    row = await cursor.fetchone()
     if row is None:
         return False
 
-    config_path, backup_path = row[0], row[1]
+    config_path, backup_path = row["config_path"], row["backup_path"]
     backup = Path(backup_path)
     if not backup.exists():
         logger.error("Backup file missing: %s", backup_path)
@@ -106,24 +104,22 @@ async def restore_backup(backup_id: int) -> bool:
 async def _cleanup_old_backups() -> None:
     """Remove oldest backups if we exceed MAX_BACKUPS."""
     db = await get_db()
-    cursor = await db.execute("SELECT COUNT(*) FROM backups")
-    count = (await cursor.fetchone())[0]
+    count = await db.fetch_scalar("SELECT COUNT(*) FROM backups") or 0
     if count <= MAX_BACKUPS:
         return
 
     to_delete = count - MAX_BACKUPS
-    cursor = await db.execute(
+    rows = await db.fetch_all(
         "SELECT id, backup_path FROM backups ORDER BY timestamp ASC LIMIT ?",
         (to_delete,),
     )
-    rows = await cursor.fetchall()
     for row in rows:
-        path = Path(row[1])
+        path = Path(row["backup_path"])
         if path.exists():
             try:
                 path.unlink()
             except OSError:
                 pass
-        await db.execute("DELETE FROM backups WHERE id = ?", (row[0],))
+        await db.execute("DELETE FROM backups WHERE id = ?", (row["id"],))
     await db.commit()
     logger.info("Cleaned up %d old backups", to_delete)
