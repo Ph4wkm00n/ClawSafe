@@ -140,4 +140,4 @@ See the [Security Guide](docs/security.md) for details and production checklist.
 
 ## License
 
-Open source. See LICENSE for details.
+[MIT License](LICENSE) — free to use, modify, and distribute.
