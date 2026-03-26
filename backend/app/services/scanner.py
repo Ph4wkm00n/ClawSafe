@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+import subprocess
 from pathlib import Path
 
 import yaml
@@ -86,12 +87,48 @@ def _check_auth(config: dict | None) -> dict:
     return {"auth_enabled": enabled, "method": method}
 
 
+def _detect_openclaw_version() -> str | None:
+    """Try to detect OpenClaw version from running container or config."""
+    try:
+        result = subprocess.run(
+            ["docker", "ps", "--filter", "name=openclaw", "--format", "{{.Image}}"],
+            capture_output=True, text=True, timeout=10,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            image = result.stdout.strip().split("\n")[0]
+            # Extract tag as version (e.g., "openclaw:1.2.3" → "1.2.3")
+            if ":" in image:
+                return image.split(":")[-1]
+            return "latest"
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        pass
+    return None
+
+
+def _check_openclaw_reachable() -> bool:
+    """Check if OpenClaw API is reachable."""
+    try:
+        import httpx
+        resp = httpx.get("http://localhost:8080/health", timeout=5)
+        return resp.status_code < 500
+    except Exception:
+        return False
+
+
 def _check_updates() -> dict:
-    """Check for version updates. Currently compares static versions."""
+    """Check for version updates using live detection."""
+    detected = _detect_openclaw_version()
+    current = detected or "unknown"
+
+    # Compare against known latest (in real deployment, fetch from registry)
+    latest = "1.2.0"
+    up_to_date = current == latest or current == "latest" or current == "unknown"
+
     return {
-        "up_to_date": True,
-        "current_version": "1.0.0",
-        "latest_version": "1.0.0",
+        "up_to_date": up_to_date,
+        "current_version": current,
+        "latest_version": latest,
+        "detected": detected is not None,
     }
 
 

@@ -5,8 +5,9 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+import time
 
-from app.services.metrics import update_metrics
+from app.services.metrics import record_error, record_scan_duration, update_metrics
 from app.services.scanner import get_demo_findings, scan_openclaw
 from app.services.scoring import compute_status
 
@@ -30,6 +31,7 @@ async def run_scan() -> None:
     from app.services.activity import log_event
     from app.services.notifications import notify_escalation
 
+    scan_start = time.perf_counter()
     findings = scan_openclaw()
     if not findings["openclaw_detected"]:
         findings = get_demo_findings()
@@ -61,8 +63,10 @@ async def run_scan() -> None:
         )
         await notify_escalation(prev_status, status.status.value)
 
+    scan_duration = time.perf_counter() - scan_start
+    record_scan_duration(scan_duration)
     _consecutive_failures = 0
-    logger.info("Scan complete: status=%s score=%d", status.status.value, status.score)
+    logger.info("Scan complete: status=%s score=%d duration=%.2fs", status.status.value, status.score, scan_duration)
 
     # Emit event for WebSocket broadcast
     from app.services.event_bus import emit
@@ -76,6 +80,7 @@ async def _scan_loop(interval: int) -> None:
             await run_scan()
         except Exception as e:
             _consecutive_failures += 1
+            record_error("scan_failure")
             logger.error("Scan failed (attempt %d): %s", _consecutive_failures, e)
 
         # Exponential backoff on failures, capped at MAX_BACKOFF_MULTIPLIER * interval

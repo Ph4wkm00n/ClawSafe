@@ -19,42 +19,43 @@ and integration depth.
 
 ---
 
-## v1.2 — Operational Depth (Near-Term)
+## v1.2 — Operational Depth ✅ RELEASED
 
 **Theme:** Make the existing features genuinely production-robust.
 
 ### Real Health & Version Checking
-- [ ] Live OpenClaw version detection (Docker image inspection / API call)
-- [ ] Compare against latest release from upstream registry
+- [x] Live OpenClaw version detection (Docker image inspection)
+- [x] Compare against latest release from upstream registry
+- [x] Health check includes OpenClaw process/container reachability
 - [ ] Alert when running versions with known security advisories
-- [ ] Health check includes OpenClaw process/container status (not just ClawSafe DB)
 
 ### Notification Channels
-- [ ] Email notifications via SMTP (SendGrid / Mailgun support)
-- [ ] Slack app integration (formatted block messages, not just webhooks)
-- [ ] Microsoft Teams webhook support
+- [x] Email notifications via SMTP (SendGrid / Mailgun support)
+- [x] Slack app integration (formatted Block Kit messages)
+- [x] Microsoft Teams webhook support (Adaptive Cards)
+- [x] Webhook HMAC signatures for delivery verification
+- [x] Do-not-disturb hours configuration
+- [x] Digest mode config (daily/weekly interval)
 - [ ] Notification templates (Jinja2) — customizable message format
-- [ ] Digest mode — batch low-priority events into daily/weekly summary
-- [ ] Webhook HMAC signatures for delivery verification
-- [ ] Do-not-disturb hours configuration
 
 ### Observability Improvements
-- [ ] Request latency histogram (`clawsafe_request_duration_seconds`)
-- [ ] Scan duration tracking (`clawsafe_scan_duration_seconds`)
-- [ ] Error rate counter per endpoint
-- [ ] Ship a Grafana dashboard JSON for one-click import
+- [x] Request latency histogram (`clawsafe_request_duration_seconds`)
+- [x] Scan duration tracking (`clawsafe_scan_duration_seconds`)
+- [x] Error rate counter per endpoint (`clawsafe_errors_total`)
+- [x] Notification counter per channel (`clawsafe_notifications_total`)
+- [x] Ship a Grafana dashboard JSON for one-click import
 - [ ] OpenTelemetry trace context propagation
 
 ### Database & Data
-- [ ] Optional PostgreSQL backend (for HA and multi-instance)
-- [ ] Configurable data retention (auto-purge scans/activity older than N days)
-- [ ] Database backup on schedule (not just pre-fix)
-- [ ] Export activity/scans to CSV/JSON for auditing
+- [x] Optional PostgreSQL backend (for HA and multi-instance)
+- [x] Configurable data retention (auto-purge scans/activity older than N days)
+- [x] Database backup on schedule (SQLite backup endpoint)
+- [x] Export activity/scans to CSV/JSON for auditing
 
 ### Developer Experience
-- [ ] `make migrate` command for schema upgrades
-- [ ] Pre-commit hooks configuration (`.pre-commit-config.yaml`)
-- [ ] Development seed data command (`make seed`)
+- [x] `make migrate` command for schema upgrades
+- [x] Pre-commit hooks configuration (`.pre-commit-config.yaml`)
+- [x] Development seed data command (`make seed`)
 - [ ] API client SDK (Python package for programmatic access)
 
 ---

@@ -1,4 +1,4 @@
-.PHONY: install dev test lint build prod clean
+.PHONY: install dev test lint build prod clean migrate seed
 
 install: ## Install dependencies for local development
 	cd backend && pip install -r requirements.txt
@@ -35,6 +35,12 @@ home: ## Start in home user mode (localhost only)
 
 smb: ## Start in SMB mode (with metrics)
 	docker compose -f docker-compose.yml -f docker-compose.smb.yml up -d
+
+migrate: ## Run database migrations manually
+	cd backend && python -c "import asyncio; from app.db.database import get_db; asyncio.run(get_db()); print('Migrations applied.')"
+
+seed: ## Seed demo data for development
+	cd backend && CLAWSAFE_DEMO_MODE=true python -c "import asyncio; from app.db.database import get_db; from app.services.activity import seed_demo_activity; asyncio.run(get_db()); asyncio.run(seed_demo_activity()); print('Demo data seeded.')"
 
 clean: ## Remove containers, volumes, and build artifacts
 	docker compose down -v

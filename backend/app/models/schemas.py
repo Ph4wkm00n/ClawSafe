@@ -76,7 +76,7 @@ class UserSettings(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str = "ok"
-    version: str = "1.0.0"
+    version: str = "1.2.0"
 
 
 class FixResult(BaseModel):
@@ -126,6 +126,8 @@ class WebhookConfig(BaseModel):
     url: str
     name: str = ""
     events: list[str] = ["escalation"]
+    format: str = "json"  # "json", "slack", "teams"
+    hmac_secret: str = ""
 
 
 class NotificationConfig(BaseModel):
@@ -133,6 +135,10 @@ class NotificationConfig(BaseModel):
     email_enabled: bool = False
     email_address: str = ""
     events: list[str] = ["escalation", "weekly_summary"]
+    dnd_start: str = ""  # HH:MM (e.g., "22:00")
+    dnd_end: str = ""  # HH:MM (e.g., "08:00")
+    digest_enabled: bool = False
+    digest_interval: str = "daily"  # "daily" or "weekly"
 
 
 class ScanHistoryEntry(BaseModel):
