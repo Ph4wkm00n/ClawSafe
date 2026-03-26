@@ -1,0 +1,72 @@
+# ClawSafe Helm Chart values
+
+replicaCount: 1
+
+backend:
+  image:
+    repository: clawsafe-backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  port: 8000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+frontend:
+  image:
+    repository: clawsafe-frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+  port: 3000
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+config:
+  debug: "false"
+  logLevel: "INFO"
+  scanInterval: "3600"
+  demoMode: "false"
+  dbType: "sqlite"
+  trivyEnabled: "false"
+
+# Set these in a values override or via --set
+secrets:
+  apiKey: ""
+  jwtSecret: ""
+  dbUrl: ""
+  smtpPassword: ""
+
+ingress:
+  enabled: false
+  className: nginx
+  annotations: {}
+  hosts:
+    - host: clawsafe.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClassName: ""
+
+serviceAccount:
+  create: true
+  name: ""
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80

@@ -1,0 +1,12 @@
+apiVersion: v2
+name: clawsafe
+description: ClawSafe — self-hosted security sidecar for OpenClaw
+type: application
+version: 1.0.0
+appVersion: "1.1.0"
+keywords:
+  - security
+  - openclaw
+  - monitoring
+  - dashboard
+home: https://github.com/your-org/clawsafe

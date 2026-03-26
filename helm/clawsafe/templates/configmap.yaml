@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "clawsafe.fullname" . }}-config
+  labels:
+    {{- include "clawsafe.labels" . | nindent 4 }}
+data:
+  CLAWSAFE_DEBUG: {{ .Values.config.debug | quote }}
+  CLAWSAFE_LOG_LEVEL: {{ .Values.config.logLevel | quote }}
+  CLAWSAFE_SCAN_INTERVAL: {{ .Values.config.scanInterval | quote }}
+  CLAWSAFE_DEMO_MODE: {{ .Values.config.demoMode | quote }}
+  CLAWSAFE_DB_TYPE: {{ .Values.config.dbType | quote }}
+  CLAWSAFE_TRIVY_ENABLED: {{ .Values.config.trivyEnabled | quote }}
+  CLAWSAFE_DATABASE_PATH: "/data/clawsafe.db"
+  CLAWSAFE_FRONTEND_URL: "http://{{ include "clawsafe.fullname" . }}-frontend:{{ .Values.frontend.port }}"
+  NEXT_PUBLIC_API_URL: "http://{{ include "clawsafe.fullname" . }}-backend:{{ .Values.backend.port }}"
