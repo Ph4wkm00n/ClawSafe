@@ -5,11 +5,14 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.metrics import router as metrics_router
 from app.api.router import api_router
+from app.api.websocket import router as ws_router
 from app.core.config import settings
 from app.core.logging import setup_logging
 from app.db.database import close_db, get_db
 from app.services.activity import seed_demo_activity
+from app.services.event_bus import subscribe
 from app.services.scheduler import start_scheduler, stop_scheduler
+from app.services.ws_manager import manager
 
 setup_logging(settings.log_level)
 
@@ -18,6 +21,8 @@ setup_logging(settings.log_level)
 async def lifespan(app: FastAPI):
     await get_db()
     await seed_demo_activity()
+    # Subscribe WebSocket manager to event bus
+    subscribe(manager.handle_event)
     await start_scheduler(interval=settings.scan_interval)
     yield
     await stop_scheduler()
@@ -40,3 +45,4 @@ app.add_middleware(
 
 app.include_router(api_router)
 app.include_router(metrics_router)
+app.include_router(ws_router)

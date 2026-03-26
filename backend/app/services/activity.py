@@ -19,6 +19,10 @@ async def log_event(
     )
     await db.commit()
 
+    # Emit event for WebSocket broadcast
+    from app.services.event_bus import emit
+    await emit("activity", {"event_type": event_type, "description": description, "severity": severity})
+
 
 async def get_recent(limit: int = 20, offset: int = 0) -> ActivityList:
     db = await get_db()

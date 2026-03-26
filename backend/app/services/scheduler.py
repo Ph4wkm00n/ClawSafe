@@ -64,6 +64,10 @@ async def run_scan() -> None:
     _consecutive_failures = 0
     logger.info("Scan complete: status=%s score=%d", status.status.value, status.score)
 
+    # Emit event for WebSocket broadcast
+    from app.services.event_bus import emit
+    await emit("scan_complete", {"status": status.status.value, "score": status.score})
+
 
 async def _scan_loop(interval: int) -> None:
     global _running, _consecutive_failures
