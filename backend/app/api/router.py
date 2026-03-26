@@ -3,6 +3,7 @@ from fastapi import APIRouter
 from app.api import (
     activity,
     auth,
+    data,
     fixer,
     health,
     instances,
@@ -30,3 +31,4 @@ api_router.include_router(skill.router, tags=["skill"])
 api_router.include_router(instances.router, tags=["instances"])
 api_router.include_router(auth.router, tags=["auth"])
 api_router.include_router(vulnerabilities.router, tags=["vulnerabilities"])
+api_router.include_router(data.router, tags=["data"])

@@ -1,0 +1,93 @@
+{
+  "dashboard": {
+    "title": "ClawSafe Security Dashboard",
+    "uid": "clawsafe-overview",
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Overall Safety Status",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0},
+        "targets": [{"expr": "clawsafe_overall_status", "legendFormat": "Status"}],
+        "fieldConfig": {
+          "defaults": {
+            "mappings": [
+              {"type": "value", "options": {"0": {"text": "Safe", "color": "green"}}},
+              {"type": "value", "options": {"1": {"text": "Attention", "color": "orange"}}},
+              {"type": "value", "options": {"2": {"text": "At Risk", "color": "red"}}}
+            ]
+          }
+        }
+      },
+      {
+        "title": "Risk Score by Category",
+        "type": "gauge",
+        "gridPos": {"h": 4, "w": 18, "x": 6, "y": 0},
+        "targets": [{"expr": "clawsafe_risk_score", "legendFormat": "{{category}}"}],
+        "fieldConfig": {"defaults": {"max": 100, "thresholds": {"steps": [
+          {"color": "green", "value": 0},
+          {"color": "orange", "value": 30},
+          {"color": "red", "value": 70}
+        ]}}}
+      },
+      {
+        "title": "Scans Performed",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 4},
+        "targets": [{"expr": "clawsafe_scan_count", "legendFormat": "Total Scans"}]
+      },
+      {
+        "title": "Fixes Applied",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 4},
+        "targets": [{"expr": "clawsafe_fix_count", "legendFormat": "Total Fixes"}]
+      },
+      {
+        "title": "Errors",
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 6, "x": 12, "y": 4},
+        "targets": [{"expr": "sum(clawsafe_errors_total)", "legendFormat": "Total Errors"}],
+        "fieldConfig": {"defaults": {"color": {"mode": "thresholds"}, "thresholds": {"steps": [
+          {"color": "green", "value": 0},
+          {"color": "red", "value": 1}
+        ]}}}
+      },
+      {
+        "title": "Scan Duration",
+        "type": "timeseries",
+        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 8},
+        "targets": [
+          {"expr": "histogram_quantile(0.50, rate(clawsafe_scan_duration_seconds_bucket[5m]))", "legendFormat": "p50"},
+          {"expr": "histogram_quantile(0.95, rate(clawsafe_scan_duration_seconds_bucket[5m]))", "legendFormat": "p95"},
+          {"expr": "histogram_quantile(0.99, rate(clawsafe_scan_duration_seconds_bucket[5m]))", "legendFormat": "p99"}
+        ]
+      },
+      {
+        "title": "Request Latency (p95)",
+        "type": "timeseries",
+        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 8},
+        "targets": [
+          {"expr": "histogram_quantile(0.95, sum(rate(clawsafe_request_duration_seconds_bucket[5m])) by (le, endpoint))", "legendFormat": "{{endpoint}}"}
+        ]
+      },
+      {
+        "title": "Notifications Sent",
+        "type": "timeseries",
+        "gridPos": {"h": 6, "w": 12, "x": 0, "y": 14},
+        "targets": [
+          {"expr": "sum(rate(clawsafe_notifications_total[5m])) by (channel, status)", "legendFormat": "{{channel}} ({{status}})"}
+        ]
+      },
+      {
+        "title": "Error Rate by Type",
+        "type": "timeseries",
+        "gridPos": {"h": 6, "w": 12, "x": 12, "y": 14},
+        "targets": [
+          {"expr": "sum(rate(clawsafe_errors_total[5m])) by (error_type)", "legendFormat": "{{error_type}}"}
+        ]
+      }
+    ],
+    "time": {"from": "now-6h", "to": "now"},
+    "refresh": "30s"
+  }
+}
