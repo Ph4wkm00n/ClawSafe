@@ -8,6 +8,7 @@ const strings: Record<string, string> = {
   "nav.instances": "Instances",
   "nav.vulnerabilities": "Vulnerabilities",
   "nav.activity": "Activity",
+  "nav.audit": "Audit Trail",
   "nav.settings": "Advanced Settings",
   "nav.appearance": "Appearance",
   "nav.about": "About & Help",
@@ -159,6 +160,25 @@ const strings: Record<string, string> = {
   "vulns.critical": "Critical",
   "vulns.no_containers": "No Docker containers detected. Is Docker running?",
   "vulns.no_vulns": "No vulnerabilities found in this image.",
+
+  // Auth
+  "auth.login": "Sign in",
+  "auth.register": "Create account",
+  "auth.login_subtitle": "Sign in to your ClawSafe dashboard.",
+  "auth.register_subtitle": "Create a new account.",
+  "auth.email": "Email address",
+  "auth.password": "Password",
+  "auth.have_account": "Already have an account? Sign in",
+  "auth.no_account": "Don't have an account? Register",
+
+  // Audit
+  "audit.title": "Audit Trail",
+  "audit.time": "Time",
+  "audit.user": "User",
+  "audit.action": "Action",
+  "audit.resource": "Resource",
+  "audit.details": "Details",
+  "audit.empty": "No audit entries yet.",
 
   // Common
   "common.back": "Back",

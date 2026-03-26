@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import CategoryCards from "@/components/dashboard/CategoryCards";
 import FixFlow from "@/components/dashboard/FixFlow";
@@ -10,6 +10,7 @@ import OnboardingWizard from "@/components/onboarding/OnboardingWizard";
 import ErrorState from "@/components/ui/ErrorState";
 import { SkeletonCard, SkeletonStatus } from "@/components/ui/Skeleton";
 import { useActivity } from "@/hooks/useActivity";
+import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
 import { useSettings } from "@/hooks/useSettings";
 import { useStatus } from "@/hooks/useStatus";
 import type { UserSettings } from "@/lib/types";
@@ -19,6 +20,10 @@ export default function DashboardPage() {
   const { events, loading: activityLoading } = useActivity(5);
   const { settings, loading: settingsLoading, save } = useSettings();
   const [activeFixId, setActiveFixId] = useState<string | null>(null);
+
+  // Keyboard shortcuts: R to refresh
+  const shortcuts = useMemo(() => ({ r: refresh }), [refresh]);
+  useKeyboardShortcuts(shortcuts);
 
   // Show onboarding wizard if not completed
   if (!settingsLoading && !settings.onboarding_complete) {

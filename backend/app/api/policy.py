@@ -2,7 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.auth import require_auth
 from app.models.schemas import PolicyConfig, PolicyResponse, PolicyValidation
-from app.services.policy import get_active_policy, save_policy, validate_policy
+from fastapi.responses import PlainTextResponse
+
+from app.services.policy import export_policy, get_active_policy, get_policy_history, save_policy, validate_policy
 
 router = APIRouter()
 
@@ -26,3 +28,19 @@ async def update_policy(config: PolicyConfig):
 @router.post("/policy/validate", response_model=PolicyValidation)
 async def validate_policy_endpoint(config: PolicyConfig):
     return validate_policy(config.model_dump())
+
+
+@router.get("/policy/history")
+async def policy_history():
+    """Get policy version history."""
+    return await get_policy_history()
+
+
+@router.get("/policy/export")
+async def export_policy_yaml():
+    """Export active policy as YAML."""
+    try:
+        yaml_str = await export_policy()
+        return PlainTextResponse(content=yaml_str, media_type="text/yaml")
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))

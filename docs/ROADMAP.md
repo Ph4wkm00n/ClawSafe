@@ -60,40 +60,42 @@ and integration depth.
 
 ---
 
-## v1.5 — Multi-Instance & RBAC
+## v1.5 — Multi-Instance & RBAC ✅ RELEASED
 
 **Theme:** Support teams and small organizations, not just solo users.
 
 ### Multi-Instance Dashboard
-- [ ] Register multiple OpenClaw instances from one ClawSafe deployment
-- [ ] Per-instance status cards on dashboard
-- [ ] Cross-instance risk aggregation ("3 of 5 instances are exposed")
+- [x] Register multiple OpenClaw instances from one ClawSafe deployment
+- [x] Per-instance status endpoint (GET /instances/{id}/status)
+- [x] Cross-instance risk aggregation (GET /instances/aggregate)
+- [x] Instance groups/tags (tags field in instance model)
 - [ ] Bulk fix operations (apply policy to all instances)
-- [ ] Instance groups/tags (dev, staging, production)
 - [ ] Instance health timeline (risk score over time)
 
 ### Role-Based Access Control
-- [ ] User accounts with email/password registration
-- [ ] Three roles: Admin, Security Officer, Viewer
+- [x] User accounts with email/password registration
+- [x] Three roles: Admin, Security Officer, Viewer
+- [x] JWT authentication (login/register/token)
+- [x] Audit trail: who changed what, when (audit_log table + API)
+- [x] Login page UI
 - [ ] Per-instance permissions (User A manages prod, User B manages dev)
-- [ ] Audit trail: who changed what setting, when, from which IP
-- [ ] Session management (timeout, concurrent session limits)
 - [ ] API key management UI (create, revoke, set expiry)
 
 ### Policy Management
-- [ ] Policy version history (diff between versions)
+- [x] Policy version history (GET /policy/history)
+- [x] Import/export policies as YAML (GET /policy/export)
 - [ ] Policy inheritance (base policy + per-instance overrides)
-- [ ] Policy simulation ("what if I activate this policy? Which instances fail?")
-- [ ] Policy templates library (Home Secure, SMB Standard, Developer Open)
-- [ ] Import/export policies as files
+- [ ] Policy simulation ("what if I activate this policy?")
+- [ ] Policy templates library
 
 ### Frontend Improvements
-- [ ] WebSocket connection for real-time status updates (replace polling)
-- [ ] Global state management (React Context or Zustand) with cross-tab sync
-- [ ] Scan history timeline chart (risk score over time)
-- [ ] Comparison view (current config vs. recommended policy)
-- [ ] Keyboard shortcuts (R to refresh, F to fix, Esc to close)
-- [ ] Localization: Spanish, French, German, Japanese, Chinese
+- [x] WebSocket connection for real-time status updates
+- [x] Keyboard shortcuts (R=refresh, D=dashboard, I=instances, A=activity, S=settings)
+- [x] Localization infrastructure + Spanish locale
+- [x] Audit trail page with filterable table
+- [ ] Global state management (Zustand) with cross-tab sync
+- [ ] Scan history timeline chart
+- [ ] Comparison view (current config vs. recommended)
 
 ---
 
