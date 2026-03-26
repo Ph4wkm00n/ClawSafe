@@ -15,6 +15,10 @@ _task: asyncio.Task | None = None
 _running = False
 
 
+def is_scheduler_running() -> bool:
+    return _running and _task is not None and not _task.done()
+
+
 async def run_scan() -> None:
     """Execute a scan, store results, and check for drift."""
     from app.db.database import get_db

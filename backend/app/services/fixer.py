@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import yaml
@@ -11,20 +12,31 @@ from app.models.schemas import FixResult
 from app.services.activity import log_event
 from app.services.backup import create_backup, restore_backup
 
+logger = logging.getLogger(__name__)
+
 
 async def _load_config() -> dict:
     path = Path(settings.openclaw_config_path)
     if not path.exists():
         return {}
-    with open(path) as f:
-        return yaml.safe_load(f) or {}
+    try:
+        with open(path) as f:
+            data = yaml.safe_load(f)
+            return data if isinstance(data, dict) else {}
+    except Exception as e:
+        logger.error("Failed to load config: %s", e)
+        return {}
 
 
 async def _save_config(config: dict) -> None:
     path = Path(settings.openclaw_config_path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w") as f:
-        yaml.safe_dump(config, f, default_flow_style=False)
+    try:
+        with open(path, "w") as f:
+            yaml.safe_dump(config, f, default_flow_style=False)
+    except OSError as e:
+        logger.error("Failed to save config: %s", e)
+        raise
 
 
 async def _fix_network_binding(config: dict) -> str:
@@ -35,6 +47,8 @@ async def _fix_network_binding(config: dict) -> str:
 
 async def _fix_tools_policy(config: dict) -> str:
     skills = config.get("skills", config.get("tools", []))
+    if not isinstance(skills, list):
+        skills = []
     disabled = []
     for skill in skills:
         if isinstance(skill, dict) and skill.get("risk") in ("high", "critical"):
@@ -49,6 +63,8 @@ async def _fix_tools_policy(config: dict) -> str:
 
 async def _fix_data_mounts(config: dict) -> str:
     mounts = config.get("mounts", config.get("volumes", []))
+    if not isinstance(mounts, list):
+        mounts = []
     sensitive = {"/", "/etc", "/root", "/home"}
     safe_mounts = [m for m in mounts if not (isinstance(m, str) and m.rstrip("/") in sensitive)]
     if "mounts" in config:
@@ -91,6 +107,7 @@ async def apply_fix(action_id: str) -> FixResult:
         message = await handler(config)
         await _save_config(config)
         await log_event("fix_applied", f"Auto-fix applied: {action_id}", "safe")
+        logger.info("Fix applied: %s", action_id)
         return FixResult(
             success=True,
             action_id=action_id,
@@ -98,6 +115,7 @@ async def apply_fix(action_id: str) -> FixResult:
             backup_id=backup_id,
         )
     except Exception as e:
+        logger.error("Fix failed for %s: %s", action_id, e)
         await log_event("fix_failed", f"Auto-fix failed: {action_id} — {e}", "risk")
         return FixResult(
             success=False,

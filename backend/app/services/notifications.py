@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import ipaddress
 import logging
+from urllib.parse import urlparse
 
 import httpx
 
@@ -12,6 +14,34 @@ from app.models.schemas import NotificationConfig
 logger = logging.getLogger(__name__)
 
 SETTINGS_KEY = "notification_config"
+MAX_RETRIES = 3
+
+
+def validate_webhook_url(url: str) -> str | None:
+    """Validate that URL is safe (not targeting private networks). Returns error or None."""
+    try:
+        parsed = urlparse(url)
+    except Exception:
+        return "Invalid URL format."
+
+    if parsed.scheme not in ("http", "https"):
+        return "URL must use http or https."
+
+    hostname = parsed.hostname or ""
+    if not hostname:
+        return "URL must have a hostname."
+
+    # Block obviously private addresses
+    try:
+        ip = ipaddress.ip_address(hostname)
+        if ip.is_private or ip.is_loopback or ip.is_reserved:
+            return "URL must not target private or loopback addresses."
+    except ValueError:
+        # Hostname is not an IP — check for common private hostnames
+        if hostname in ("localhost", "127.0.0.1", "::1", "0.0.0.0"):
+            return "URL must not target localhost."
+
+    return None
 
 
 async def load_config() -> NotificationConfig:
@@ -34,14 +64,18 @@ async def save_config(config: NotificationConfig) -> None:
     await db.commit()
 
 
-async def send_webhook(url: str, payload: dict) -> bool:
-    try:
-        async with httpx.AsyncClient(timeout=10) as client:
-            resp = await client.post(url, json=payload)
-            return resp.status_code < 400
-    except Exception as e:
-        logger.error("Webhook failed (%s): %s", url, e)
-        return False
+async def send_webhook(url: str, payload: dict, retries: int = MAX_RETRIES) -> bool:
+    for attempt in range(retries):
+        try:
+            async with httpx.AsyncClient(timeout=10) as client:
+                resp = await client.post(url, json=payload)
+                if resp.status_code < 400:
+                    return True
+                logger.warning("Webhook %s returned %d (attempt %d)", url, resp.status_code, attempt + 1)
+        except Exception as e:
+            logger.warning("Webhook failed (%s, attempt %d): %s", url, attempt + 1, e)
+    logger.error("Webhook %s failed after %d attempts", url, retries)
+    return False
 
 
 async def send_test_notification(url: str) -> bool:
@@ -50,7 +84,7 @@ async def send_test_notification(url: str) -> bool:
         "type": "test",
         "message": "This is a test notification from ClawSafe.",
     }
-    return await send_webhook(url, payload)
+    return await send_webhook(url, payload, retries=1)
 
 
 async def notify_escalation(old_status: str, new_status: str) -> None:

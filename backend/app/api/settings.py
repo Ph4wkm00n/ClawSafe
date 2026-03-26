@@ -1,5 +1,7 @@
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+
+from app.core.auth import require_auth
 
 from app.db.database import get_db
 from app.models.schemas import UserSettings
@@ -34,7 +36,7 @@ async def get_settings():
     return await _load_settings()
 
 
-@router.put("/settings", response_model=UserSettings)
+@router.put("/settings", response_model=UserSettings, dependencies=[Depends(require_auth)])
 async def update_settings(payload: UserSettings):
     await _save_settings(payload)
     return payload

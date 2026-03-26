@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from app.core.config import settings
 from app.db.database import get_db
 from app.models.schemas import ActivityEvent, ActivityList
 
@@ -46,7 +47,10 @@ async def get_recent(limit: int = 20, offset: int = 0) -> ActivityList:
 
 
 async def seed_demo_activity() -> None:
-    """Insert demo activity events if the table is empty."""
+    """Insert demo activity events if demo mode is enabled and table is empty."""
+    if not settings.demo_mode:
+        return
+
     db = await get_db()
     cursor = await db.execute("SELECT COUNT(*) FROM activity")
     count = (await cursor.fetchone())[0]
