@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: "/instances", label: t("nav.instances"), icon: "🖥️" },
   { href: "/vulnerabilities", label: t("nav.vulnerabilities"), icon: "🔍" },
   { href: "/activity", label: t("nav.activity"), icon: "📋" },
+  { href: "/audit", label: t("nav.audit"), icon: "📜" },
   { href: "/settings", label: t("nav.settings"), icon: "⚙️" },
   { href: "/appearance", label: t("nav.appearance"), icon: "🎨" },
   { href: "/about", label: t("nav.about"), icon: "❓" },

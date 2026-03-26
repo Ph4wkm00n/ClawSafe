@@ -109,3 +109,44 @@ async def get_active_instances() -> list[InstanceResponse]:
     """Get all active instances for scanning."""
     result = await list_instances()
     return [i for i in result.instances if i.active]
+
+
+async def get_aggregated_status() -> dict:
+    """Aggregate risk status across all active instances."""
+    from app.services.scanner import get_demo_findings, scan_openclaw
+    from app.services.scoring import compute_status
+
+    instances = await get_active_instances()
+    results = []
+    safe_count = attention_count = risk_count = 0
+    total_score = 0
+
+    for inst in instances:
+        findings = scan_openclaw(config_path=inst.config_path)
+        if not findings["openclaw_detected"]:
+            findings = get_demo_findings()
+        status = compute_status(findings)
+        level = status.status.value
+        if level == "safe":
+            safe_count += 1
+        elif level == "attention":
+            attention_count += 1
+        else:
+            risk_count += 1
+        total_score += status.score
+        results.append({
+            "instance_id": inst.id,
+            "instance_name": inst.name,
+            "status": level,
+            "score": status.score,
+        })
+
+    return {
+        "total_instances": len(instances),
+        "safe_count": safe_count,
+        "attention_count": attention_count,
+        "risk_count": risk_count,
+        "avg_score": round(total_score / max(len(instances), 1), 1),
+        "instances": results,
+    }
+

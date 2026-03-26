@@ -90,3 +90,42 @@ async def save_policy(config: PolicyConfig) -> PolicyResponse:
     )
     await db.commit()
     return PolicyResponse(id=new_id, name=config.name, active=True, config=config)
+
+
+async def get_policy_history(limit: int = 20) -> list[dict]:
+    """Get policy version history."""
+    db = await get_db()
+    rows = await db.fetch_all(
+        "SELECT id, timestamp, name, active FROM policies ORDER BY timestamp DESC LIMIT ?",
+        (limit,),
+    )
+    return [
+        {
+            "id": row["id"],
+            "timestamp": row["timestamp"],
+            "name": row["name"],
+            "active": bool(row["active"]),
+        }
+        for row in rows
+    ]
+
+
+async def export_policy(policy_id: int | None = None) -> str:
+    """Export a policy as YAML string. If no ID, exports active policy."""
+    import yaml as yaml_lib
+
+    if policy_id is not None:
+        db = await get_db()
+        row = await db.fetch_one(
+            "SELECT content_json FROM policies WHERE id = ?", (policy_id,)
+        )
+        if row is None:
+            raise ValueError("Policy not found.")
+        config = PolicyConfig.model_validate_json(row["content_json"])
+    else:
+        resp = await get_active_policy()
+        if resp is None:
+            raise ValueError("No active policy.")
+        config = resp.config
+
+    return yaml_lib.safe_dump(config.model_dump(), default_flow_style=False)
