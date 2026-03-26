@@ -12,6 +12,7 @@ from app.api import (
     policy,
     recommendations,
     scans,
+    security,
     settings,
     skill,
     status,
@@ -34,3 +35,4 @@ api_router.include_router(auth.router, tags=["auth"])
 api_router.include_router(vulnerabilities.router, tags=["vulnerabilities"])
 api_router.include_router(data.router, tags=["data"])
 api_router.include_router(audit.router, tags=["audit"])
+api_router.include_router(security.router, tags=["security"])

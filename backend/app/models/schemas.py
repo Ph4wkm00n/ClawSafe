@@ -76,7 +76,7 @@ class UserSettings(BaseModel):
 
 class HealthResponse(BaseModel):
     status: str = "ok"
-    version: str = "1.2.0"
+    version: str = "2.0.0"
 
 
 class FixResult(BaseModel):

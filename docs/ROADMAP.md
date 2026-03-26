@@ -99,45 +99,45 @@ and integration depth.
 
 ---
 
-## v2.0 — Security Intelligence
+## v2.0 — Security Intelligence ✅ RELEASED
 
 **Theme:** Go beyond configuration checks into real security detection.
 
 ### Vulnerability Scanning
-- [ ] Container image scanning (Trivy integration for OpenClaw images)
+- [x] Container image scanning (Trivy integration)
+- [x] Secrets scanning in config files and environment (10 regex patterns)
+- [x] Custom rule engine (YAML-based detection rules in /rules/ directory)
 - [ ] Dependency vulnerability checks (CVE cross-referencing for skill packages)
-- [ ] Secrets scanning in config files and environment (regex patterns for API keys, tokens)
-- [ ] SBOM generation (Software Bill of Materials for compliance)
-- [ ] Custom rule engine (write custom detection rules in YAML)
+- [ ] SBOM generation (Software Bill of Materials)
 
 ### Runtime Monitoring
-- [ ] OpenClaw process monitoring (CPU, memory, file handles, open sockets)
-- [ ] Network connection tracking (who is OpenClaw talking to?)
-- [ ] File integrity monitoring (detect unauthorized changes to config/binaries)
-- [ ] Skill execution auditing (which skills ran, what they accessed, how long)
-- [ ] Resource exhaustion alerts (disk full, memory leak, connection flood)
+- [x] OpenClaw process monitoring (CPU, memory, status via ps)
+- [x] Network connection tracking (active connections via ss)
+- [x] File integrity monitoring (SHA-256 hashing + baseline comparison)
+- [x] Resource exhaustion alerts (disk + memory threshold monitoring)
+- [ ] Skill execution auditing (which skills ran, what they accessed)
 
 ### Compliance Mapping
-- [ ] CIS Benchmark mapping (each check → CIS control ID)
-- [ ] SOC 2 control coverage report
-- [ ] Compliance score dashboard (% of controls met)
+- [x] CIS Benchmark mapping (8 controls across 4 categories)
+- [x] SOC 2 control coverage report (6 Trust Services Criteria)
+- [x] Compliance score dashboard (% of controls met)
+- [x] Gap analysis report (failing controls with remediation)
 - [ ] Evidence collection (auto-capture proof of compliance state)
-- [ ] Gap analysis report (which controls are not covered)
 
 ### Advanced Scoring
-- [ ] CVSS 3.1-style vector scoring (exploitability × impact × scope)
-- [ ] Combined risk analysis (exposed + no auth + shell_exec = critical, not three separate issues)
-- [ ] Contextual risk weighting (public cloud vs. home network vs. corporate VPN)
-- [ ] Risk trends (is this instance getting safer or riskier over time?)
-- [ ] Blast radius estimation (if this instance is compromised, what else is affected?)
+- [x] CVSS 3.1-style vector scoring (exploitability × impact × scope)
+- [x] Combined risk analysis (correlated patterns worse than sum of parts)
+- [x] Risk trends (score over time from scan history)
+- [x] Blast radius estimation (affected systems + remediation recommendations)
+- [ ] Contextual risk weighting (deployment environment detection)
 
 ### Integrations Platform
-- [ ] Plugin SDK (Python) for custom scanners, fixers, and notifiers
-- [ ] Plugin registry/marketplace (community-contributed extensions)
-- [ ] Sandboxed plugin execution (resource limits, no host access)
-- [ ] Native integrations: PagerDuty, Opsgenie, Jira, GitHub Issues
-- [ ] GitOps: ArgoCD/Flux integration for policy-as-code deployment
-- [ ] HashiCorp Vault integration for secrets management
+- [x] Plugin SDK (Python base classes for scanners, fixers, notifiers)
+- [x] Plugin loader (auto-discovers .py files from /plugins/ directory)
+- [x] Plugin listing API (GET /plugins)
+- [ ] Plugin registry/marketplace
+- [ ] Sandboxed plugin execution
+- [ ] Native integrations: PagerDuty, Jira, GitHub Issues
 
 ---
 

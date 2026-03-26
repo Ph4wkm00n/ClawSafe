@@ -1,0 +1,36 @@
+# ClawSafe Custom Detection Rules
+# Place .yaml files in this directory to define custom security checks.
+
+rules:
+  - id: custom-001
+    name: Shell execution must be disabled
+    severity: critical
+    description: "Shell execution tool is a high-risk capability that should be disabled in production."
+    remediation: "Disable shell_exec in your OpenClaw configuration or set action to 'block' in policy."
+    condition:
+      type: check
+      field: tools.high_risk_enabled
+      operator: equals
+      value: true
+
+  - id: custom-002
+    name: Authentication must be enabled
+    severity: high
+    description: "Running without authentication allows unauthorized access."
+    remediation: "Enable authentication in your OpenClaw configuration."
+    condition:
+      type: check
+      field: auth.auth_enabled
+      operator: equals
+      value: false
+
+  - id: custom-003
+    name: Must not bind to all interfaces
+    severity: high
+    description: "Binding to 0.0.0.0 exposes OpenClaw to the network."
+    remediation: "Change bind_address to 127.0.0.1."
+    condition:
+      type: check
+      field: network.bind_address
+      operator: equals
+      value: "0.0.0.0"

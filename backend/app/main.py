@@ -24,6 +24,9 @@ async def lifespan(app: FastAPI):
     await get_db()
     await seed_demo_activity()
     subscribe(manager.handle_event)
+    # Load plugins
+    from app.plugins.loader import load_plugins
+    load_plugins()
     await start_scheduler(interval=settings.scan_interval)
     yield
     await stop_scheduler()
@@ -32,7 +35,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(
     title=settings.app_name,
-    version="1.2.0",
+    version="2.0.0",
     lifespan=lifespan,
 )
 
