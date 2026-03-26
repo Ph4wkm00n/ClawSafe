@@ -1,65 +1,69 @@
+"""Database initialization and connection management."""
+
+from __future__ import annotations
+
 import asyncio
+import logging
+from pathlib import Path
 
 import aiosqlite
 
 from app.core.config import settings
+from app.db.queries import Database, SQLiteDatabase
 
-_db: aiosqlite.Connection | None = None
+logger = logging.getLogger(__name__)
+
+_db: Database | None = None
 _lock = asyncio.Lock()
 
-SCHEMA = """
-CREATE TABLE IF NOT EXISTS scans (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
-    overall_status TEXT NOT NULL,
-    score INTEGER NOT NULL,
-    results_json TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS activity (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
-    event_type TEXT NOT NULL,
-    description TEXT NOT NULL,
-    severity TEXT NOT NULL DEFAULT 'safe'
-);
-
-CREATE TABLE IF NOT EXISTS settings (
-    key TEXT PRIMARY KEY,
-    value TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS backups (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
-    config_path TEXT NOT NULL,
-    backup_path TEXT NOT NULL,
-    action_id TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'active'
-);
-
-CREATE TABLE IF NOT EXISTS policies (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    timestamp TEXT NOT NULL DEFAULT (datetime('now')),
-    name TEXT NOT NULL,
-    content_json TEXT NOT NULL,
-    active INTEGER NOT NULL DEFAULT 0
-);
-"""
+MIGRATIONS_DIR = Path(__file__).parent.parent.parent / "migrations"
 
 
-async def get_db() -> aiosqlite.Connection:
+async def _run_migrations(db: Database) -> None:
+    """Run any unapplied migration files."""
+    await db.executescript(
+        "CREATE TABLE IF NOT EXISTS schema_version ("
+        "version INTEGER PRIMARY KEY, "
+        "applied_at TEXT NOT NULL DEFAULT (datetime('now'))"
+        ")"
+    )
+
+    applied = await db.fetch_all("SELECT version FROM schema_version ORDER BY version")
+    applied_versions = {row["version"] for row in applied}
+
+    if not MIGRATIONS_DIR.exists():
+        return
+
+    migration_files = sorted(MIGRATIONS_DIR.glob("*.sql"))
+    for mf in migration_files:
+        try:
+            version = int(mf.stem.split("_")[0])
+        except (ValueError, IndexError):
+            continue
+        if version in applied_versions:
+            continue
+        logger.info("Applying migration %s", mf.name)
+        sql = mf.read_text()
+        await db.executescript(sql)
+        await db.execute(
+            "INSERT OR IGNORE INTO schema_version (version) VALUES (?)", (version,)
+        )
+        await db.commit()
+
+
+async def get_db() -> Database:
+    """Get the database instance. Creates and migrates on first call."""
     global _db
     async with _lock:
         if _db is None:
-            _db = await aiosqlite.connect(settings.database_path)
-            _db.row_factory = aiosqlite.Row
-            await _db.executescript(SCHEMA)
-            await _db.commit()
+            conn = await aiosqlite.connect(settings.database_path)
+            _db = SQLiteDatabase(conn)
+            await _run_migrations(_db)
     return _db
 
 
 async def close_db() -> None:
+    """Close the database connection."""
     global _db
     async with _lock:
         if _db is not None:
@@ -71,8 +75,6 @@ async def db_health_check() -> bool:
     """Return True if DB is responsive."""
     try:
         db = await get_db()
-        cursor = await db.execute("SELECT 1")
-        await cursor.fetchone()
-        return True
+        return await db.health_check()
     except Exception:
         return False

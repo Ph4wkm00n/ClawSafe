@@ -1,8 +1,6 @@
-
 from fastapi import APIRouter, Depends
 
 from app.core.auth import require_auth
-
 from app.db.database import get_db
 from app.models.schemas import UserSettings
 
@@ -13,13 +11,12 @@ SETTINGS_KEY = "user_settings"
 
 async def _load_settings() -> UserSettings:
     db = await get_db()
-    cursor = await db.execute(
+    row = await db.fetch_one(
         "SELECT value FROM settings WHERE key = ?", (SETTINGS_KEY,)
     )
-    row = await cursor.fetchone()
     if row is None:
         return UserSettings()
-    return UserSettings.model_validate_json(row[0])
+    return UserSettings.model_validate_json(row["value"])
 
 
 async def _save_settings(s: UserSettings) -> None:

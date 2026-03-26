@@ -40,11 +40,10 @@ async def run_scan() -> None:
     db = await get_db()
 
     # Get previous scan status
-    cursor = await db.execute(
+    prev_row = await db.fetch_one(
         "SELECT overall_status FROM scans ORDER BY timestamp DESC LIMIT 1"
     )
-    prev_row = await cursor.fetchone()
-    prev_status = prev_row[0] if prev_row else None
+    prev_status = prev_row["overall_status"] if prev_row else None
 
     # Store new scan
     await db.execute(

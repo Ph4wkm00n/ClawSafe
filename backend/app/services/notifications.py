@@ -46,13 +46,12 @@ def validate_webhook_url(url: str) -> str | None:
 
 async def load_config() -> NotificationConfig:
     db = await get_db()
-    cursor = await db.execute(
+    row = await db.fetch_one(
         "SELECT value FROM settings WHERE key = ?", (SETTINGS_KEY,)
     )
-    row = await cursor.fetchone()
     if row is None:
         return NotificationConfig()
-    return NotificationConfig.model_validate_json(row[0])
+    return NotificationConfig.model_validate_json(row["value"])
 
 
 async def save_config(config: NotificationConfig) -> None:

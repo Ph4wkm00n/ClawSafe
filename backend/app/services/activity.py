@@ -22,23 +22,21 @@ async def log_event(
 
 async def get_recent(limit: int = 20, offset: int = 0) -> ActivityList:
     db = await get_db()
-    cursor = await db.execute(
+    rows = await db.fetch_all(
         "SELECT id, timestamp, event_type, description, severity "
         "FROM activity ORDER BY timestamp DESC LIMIT ? OFFSET ?",
         (limit, offset),
     )
-    rows = await cursor.fetchall()
 
-    count_cursor = await db.execute("SELECT COUNT(*) FROM activity")
-    total = (await count_cursor.fetchone())[0]
+    total = await db.fetch_scalar("SELECT COUNT(*) FROM activity") or 0
 
     events = [
         ActivityEvent(
-            id=row[0],
-            timestamp=row[1],
-            event_type=row[2],
-            description=row[3],
-            severity=row[4],
+            id=row["id"],
+            timestamp=row["timestamp"],
+            event_type=row["event_type"],
+            description=row["description"],
+            severity=row["severity"],
         )
         for row in rows
     ]
@@ -52,8 +50,7 @@ async def seed_demo_activity() -> None:
         return
 
     db = await get_db()
-    cursor = await db.execute("SELECT COUNT(*) FROM activity")
-    count = (await cursor.fetchone())[0]
+    count = await db.fetch_scalar("SELECT COUNT(*) FROM activity") or 0
     if count > 0:
         return
 
