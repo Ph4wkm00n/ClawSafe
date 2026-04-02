@@ -229,3 +229,11 @@ async def notify_escalation(old_status: str, new_status: str) -> None:
     if config.email_enabled and config.email_address:
         from app.services.email import send_escalation_email
         await send_escalation_email(config.email_address, old_status, new_status)
+
+    # Route to native integrations (PagerDuty, Jira, GitHub)
+    try:
+        from app.services.integrations import notify_integrations
+        severity = "critical" if new_status == "risk" else "warning"
+        await notify_integrations("escalation", payload["message"], severity)
+    except Exception as e:
+        logger.warning("Integration notification failed: %s", e)

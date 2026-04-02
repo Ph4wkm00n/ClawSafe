@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
-from app.models.schemas import OverallStatus, SafetyLevel
+import json
+import logging
+
+from app.models.schemas import EvidenceEntry, OverallStatus, SafetyLevel
+
+logger = logging.getLogger(__name__)
 
 # CIS Benchmark mappings for container security
 CIS_CONTROLS = [
@@ -152,3 +157,81 @@ def get_gap_analysis(status: OverallStatus) -> list[dict]:
                 "recommendation": f"Address the {control['category']} category risks to meet this control.",
             })
     return gaps
+
+
+# ── Evidence Collection ───────────────────────────────────────────────────
+
+
+async def capture_evidence(control_id: str, status: OverallStatus | None = None) -> EvidenceEntry:
+    """Capture a compliance evidence snapshot for a specific control."""
+    from app.db.database import get_db
+
+    if status is None:
+        from app.services.scanner import get_demo_findings, scan_openclaw
+        from app.services.scoring import compute_status
+        findings = scan_openclaw()
+        if not findings.get("openclaw_detected"):
+            findings = get_demo_findings()
+        status = compute_status(findings)
+
+    compliance_result = evaluate_compliance(status)
+
+    # Find the specific control result
+    control_data = None
+    for c in compliance_result["cis_controls"]:
+        if c["id"] == control_id:
+            control_data = c
+            break
+
+    snapshot = {
+        "control_id": control_id,
+        "control_data": control_data,
+        "overall_score": status.score,
+        "overall_status": status.status.value,
+        "compliance_score": compliance_result["compliance_score"],
+        "categories": [
+            {"category": cat.category.value, "score": cat.score, "status": cat.status.value}
+            for cat in status.categories
+        ],
+    }
+
+    db = await get_db()
+    eid = await db.insert_returning_id(
+        "INSERT INTO evidence (compliance_control, snapshot_json) VALUES (?, ?)",
+        (control_id, json.dumps(snapshot)),
+    )
+    await db.commit()
+    logger.info("Captured evidence for control %s (id=%d)", control_id, eid)
+
+    return EvidenceEntry(
+        id=eid,
+        compliance_control=control_id,
+        snapshot_json=json.dumps(snapshot),
+    )
+
+
+async def list_evidence(control_id: str | None = None) -> list[EvidenceEntry]:
+    """List captured evidence, optionally filtered by control."""
+    from app.db.database import get_db
+
+    db = await get_db()
+    if control_id:
+        rows = await db.fetch_all(
+            "SELECT id, compliance_control, snapshot_json, captured_at "
+            "FROM evidence WHERE compliance_control = ? ORDER BY captured_at DESC",
+            (control_id,),
+        )
+    else:
+        rows = await db.fetch_all(
+            "SELECT id, compliance_control, snapshot_json, captured_at "
+            "FROM evidence ORDER BY captured_at DESC LIMIT 100"
+        )
+    return [
+        EvidenceEntry(
+            id=row["id"],
+            compliance_control=row["compliance_control"],
+            snapshot_json=row["snapshot_json"],
+            captured_at=row["captured_at"],
+        )
+        for row in rows
+    ]

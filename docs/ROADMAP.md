@@ -27,7 +27,7 @@ and integration depth.
 - [x] Live OpenClaw version detection (Docker image inspection)
 - [x] Compare against latest release from upstream registry
 - [x] Health check includes OpenClaw process/container reachability
-- [ ] Alert when running versions with known security advisories
+- [x] Alert when running versions with known security advisories
 
 ### Notification Channels
 - [x] Email notifications via SMTP (SendGrid / Mailgun support)
@@ -36,7 +36,7 @@ and integration depth.
 - [x] Webhook HMAC signatures for delivery verification
 - [x] Do-not-disturb hours configuration
 - [x] Digest mode config (daily/weekly interval)
-- [ ] Notification templates (Jinja2) — customizable message format
+- [x] Notification templates (Jinja2) — customizable message format
 
 ### Observability Improvements
 - [x] Request latency histogram (`clawsafe_request_duration_seconds`)
@@ -44,7 +44,7 @@ and integration depth.
 - [x] Error rate counter per endpoint (`clawsafe_errors_total`)
 - [x] Notification counter per channel (`clawsafe_notifications_total`)
 - [x] Ship a Grafana dashboard JSON for one-click import
-- [ ] OpenTelemetry trace context propagation
+- [x] OpenTelemetry trace context propagation
 
 ### Database & Data
 - [x] Optional PostgreSQL backend (for HA and multi-instance)
@@ -56,7 +56,7 @@ and integration depth.
 - [x] `make migrate` command for schema upgrades
 - [x] Pre-commit hooks configuration (`.pre-commit-config.yaml`)
 - [x] Development seed data command (`make seed`)
-- [ ] API client SDK (Python package for programmatic access)
+- [x] API client SDK (Python package for programmatic access)
 
 ---
 
@@ -69,8 +69,8 @@ and integration depth.
 - [x] Per-instance status endpoint (GET /instances/{id}/status)
 - [x] Cross-instance risk aggregation (GET /instances/aggregate)
 - [x] Instance groups/tags (tags field in instance model)
-- [ ] Bulk fix operations (apply policy to all instances)
-- [ ] Instance health timeline (risk score over time)
+- [x] Bulk fix operations (apply policy to all instances)
+- [x] Instance health timeline (risk score over time)
 
 ### Role-Based Access Control
 - [x] User accounts with email/password registration
@@ -78,24 +78,24 @@ and integration depth.
 - [x] JWT authentication (login/register/token)
 - [x] Audit trail: who changed what, when (audit_log table + API)
 - [x] Login page UI
-- [ ] Per-instance permissions (User A manages prod, User B manages dev)
-- [ ] API key management UI (create, revoke, set expiry)
+- [x] Per-instance permissions (User A manages prod, User B manages dev)
+- [x] API key management UI (create, revoke, set expiry)
 
 ### Policy Management
 - [x] Policy version history (GET /policy/history)
 - [x] Import/export policies as YAML (GET /policy/export)
-- [ ] Policy inheritance (base policy + per-instance overrides)
-- [ ] Policy simulation ("what if I activate this policy?")
-- [ ] Policy templates library
+- [x] Policy inheritance (base policy + per-instance overrides)
+- [x] Policy simulation ("what if I activate this policy?")
+- [x] Policy templates library
 
 ### Frontend Improvements
 - [x] WebSocket connection for real-time status updates
 - [x] Keyboard shortcuts (R=refresh, D=dashboard, I=instances, A=activity, S=settings)
 - [x] Localization infrastructure + Spanish locale
 - [x] Audit trail page with filterable table
-- [ ] Global state management (Zustand) with cross-tab sync
-- [ ] Scan history timeline chart
-- [ ] Comparison view (current config vs. recommended)
+- [x] Global state management (Zustand) with cross-tab sync
+- [x] Scan history timeline chart
+- [x] Comparison view (current config vs. recommended)
 
 ---
 
@@ -107,37 +107,37 @@ and integration depth.
 - [x] Container image scanning (Trivy integration)
 - [x] Secrets scanning in config files and environment (10 regex patterns)
 - [x] Custom rule engine (YAML-based detection rules in /rules/ directory)
-- [ ] Dependency vulnerability checks (CVE cross-referencing for skill packages)
-- [ ] SBOM generation (Software Bill of Materials)
+- [x] Dependency vulnerability checks (CVE cross-referencing for skill packages)
+- [x] SBOM generation (Software Bill of Materials)
 
 ### Runtime Monitoring
 - [x] OpenClaw process monitoring (CPU, memory, status via ps)
 - [x] Network connection tracking (active connections via ss)
 - [x] File integrity monitoring (SHA-256 hashing + baseline comparison)
 - [x] Resource exhaustion alerts (disk + memory threshold monitoring)
-- [ ] Skill execution auditing (which skills ran, what they accessed)
+- [x] Skill execution auditing (which skills ran, what they accessed)
 
 ### Compliance Mapping
 - [x] CIS Benchmark mapping (8 controls across 4 categories)
 - [x] SOC 2 control coverage report (6 Trust Services Criteria)
 - [x] Compliance score dashboard (% of controls met)
 - [x] Gap analysis report (failing controls with remediation)
-- [ ] Evidence collection (auto-capture proof of compliance state)
+- [x] Evidence collection (auto-capture proof of compliance state)
 
 ### Advanced Scoring
 - [x] CVSS 3.1-style vector scoring (exploitability × impact × scope)
 - [x] Combined risk analysis (correlated patterns worse than sum of parts)
 - [x] Risk trends (score over time from scan history)
 - [x] Blast radius estimation (affected systems + remediation recommendations)
-- [ ] Contextual risk weighting (deployment environment detection)
+- [x] Contextual risk weighting (deployment environment detection)
 
 ### Integrations Platform
 - [x] Plugin SDK (Python base classes for scanners, fixers, notifiers)
 - [x] Plugin loader (auto-discovers .py files from /plugins/ directory)
 - [x] Plugin listing API (GET /plugins)
-- [ ] Plugin registry/marketplace
-- [ ] Sandboxed plugin execution
-- [ ] Native integrations: PagerDuty, Jira, GitHub Issues
+- [x] Plugin registry/marketplace
+- [x] Sandboxed plugin execution
+- [x] Native integrations: PagerDuty, Jira, GitHub Issues
 
 ---
 

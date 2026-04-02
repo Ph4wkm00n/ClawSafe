@@ -27,6 +27,9 @@ async def lifespan(app: FastAPI):
     # Load plugins
     from app.plugins.loader import load_plugins
     load_plugins()
+    # Setup OpenTelemetry if enabled
+    from app.core.telemetry import setup_telemetry
+    setup_telemetry(app)
     await start_scheduler(interval=settings.scan_interval)
     yield
     await stop_scheduler()

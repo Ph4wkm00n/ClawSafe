@@ -2,12 +2,18 @@
 
 from __future__ import annotations
 
+import logging
+import os
+from pathlib import Path
+
 from app.models.schemas import (
     CategoryName,
     CategoryStatus,
     OverallStatus,
     SafetyLevel,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def _level_from_score(score: int) -> SafetyLevel:
@@ -143,6 +149,12 @@ def _score_updates(findings: dict) -> CategoryStatus:
 
     score = 0 if updates.get("up_to_date") else 50
 
+    # Increase score if running a version with known advisories
+    advisories = updates.get("advisories", [])
+    if advisories:
+        has_critical = any(a.get("severity") == "critical" for a in advisories)
+        score = min(score + (40 if has_critical else 20), 100)
+
     level = _level_from_score(score)
 
     summaries = {
@@ -214,6 +226,45 @@ def _apply_policy_adjustments(
     return adjusted
 
 
+# ── Contextual Risk Weighting ─────────────────────────────────────────────
+
+ENVIRONMENT_WEIGHTS = {
+    "production": 1.5,
+    "staging": 1.0,
+    "development": 0.5,
+}
+
+
+def detect_environment() -> str:
+    """Auto-detect deployment environment."""
+    from app.core.config import settings
+    if settings.deploy_environment:
+        return settings.deploy_environment
+
+    # Check common environment indicators
+    env = os.environ.get("CLAWSAFE_ENVIRONMENT", "")
+    if env:
+        return env.lower()
+
+    # Kubernetes detection
+    if os.environ.get("KUBERNETES_SERVICE_HOST"):
+        return "production"
+
+    # Docker detection
+    if Path("/.dockerenv").exists():
+        return "staging"
+
+    # Default to development
+    return "development"
+
+
+def _apply_environment_weight(score: int) -> int:
+    """Apply environment-based weight multiplier to a risk score."""
+    env = detect_environment()
+    weight = ENVIRONMENT_WEIGHTS.get(env, 1.0)
+    return min(int(score * weight), 100)
+
+
 def compute_status(findings: dict, policy: dict | None = None) -> OverallStatus:
     """Compute per-category and overall safety status from raw findings.
 
@@ -228,6 +279,7 @@ def compute_status(findings: dict, policy: dict | None = None) -> OverallStatus:
     categories = _apply_policy_adjustments(categories, policy)
 
     overall_score = max(c.score for c in categories) if categories else 0
+    overall_score = _apply_environment_weight(overall_score)
     overall_level = _level_from_score(overall_score)
 
     return OverallStatus(

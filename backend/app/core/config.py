@@ -26,6 +26,11 @@ class Settings(BaseSettings):
     smtp_user: str = ""
     smtp_password: str = ""
     smtp_from: str = ""
+    version: str = "2.0.0"
+    otel_enabled: bool = False
+    otel_endpoint: str = ""
+    deploy_environment: str = ""  # auto-detect if empty; production, staging, development
+    plugin_registry_url: str = ""
 
     model_config = {"env_prefix": "CLAWSAFE_"}
 
