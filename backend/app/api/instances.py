@@ -2,11 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.auth import require_auth
 from app.models.instance import InstanceCreate, InstanceList, InstanceResponse, InstanceUpdate
+from app.models.schemas import BulkFixRequest, BulkFixResponse, InstanceScore
 from app.services.instance_manager import (
+    bulk_apply_fix,
     create_instance,
     delete_instance,
     get_aggregated_status,
     get_instance,
+    get_instance_timeline,
     list_instances,
     update_instance,
 )
@@ -67,3 +70,25 @@ async def get_instance_status(instance_id: str):
     if not findings["openclaw_detected"]:
         findings = get_demo_findings()
     return compute_status(findings)
+
+
+@router.post("/instances/bulk-fix", response_model=BulkFixResponse, dependencies=[Depends(require_auth)])
+async def apply_bulk_fix(req: BulkFixRequest):
+    """Apply a fix action to all active instances."""
+    results = await bulk_apply_fix(req.action_id)
+    succeeded = sum(1 for r in results if r.success)
+    return BulkFixResponse(
+        results=results,
+        total=len(results),
+        succeeded=succeeded,
+        failed=len(results) - succeeded,
+    )
+
+
+@router.get("/instances/{instance_id}/timeline", response_model=list[InstanceScore])
+async def instance_timeline(instance_id: str, days: int = 30):
+    """Get risk score timeline for an instance."""
+    inst = await get_instance(instance_id)
+    if inst is None:
+        raise HTTPException(status_code=404, detail="Instance not found.")
+    return await get_instance_timeline(instance_id, days)

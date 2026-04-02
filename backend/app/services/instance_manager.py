@@ -12,6 +12,7 @@ from app.models.instance import (
     InstanceResponse,
     InstanceUpdate,
 )
+from app.models.schemas import FixResult, InstanceScore
 
 logger = logging.getLogger(__name__)
 
@@ -155,4 +156,51 @@ async def get_aggregated_status() -> dict:
         "avg_score": round(total_score / max(len(instances), 1), 1),
         "instances": results,
     }
+
+
+# ── Bulk Fix ──────────────────────────────────────────────────────────────
+
+
+async def bulk_apply_fix(action_id: str) -> list[FixResult]:
+    """Apply a fix action across all active instances."""
+    from app.services.fixer import apply_fix
+
+    instances = await get_active_instances()
+    results = []
+    for inst in instances:
+        result = await apply_fix(action_id)
+        results.append(result)
+    return results
+
+
+# ── Instance Health Timeline ──────────────────────────────────────────────
+
+
+async def record_instance_score(instance_id: str, score: int, status: str) -> None:
+    """Record a risk score data point for an instance."""
+    db = await get_db()
+    await db.execute(
+        "INSERT INTO instance_scores (instance_id, score, status) VALUES (?, ?, ?)",
+        (instance_id, score, status),
+    )
+    await db.commit()
+
+
+async def get_instance_timeline(instance_id: str, days: int = 30) -> list[InstanceScore]:
+    """Get risk score history for an instance."""
+    db = await get_db()
+    rows = await db.fetch_all(
+        "SELECT instance_id, score, status, timestamp FROM instance_scores "
+        "WHERE instance_id = ? AND timestamp >= datetime('now', ?) ORDER BY timestamp",
+        (instance_id, f"-{days} days"),
+    )
+    return [
+        InstanceScore(
+            instance_id=row["instance_id"],
+            score=row["score"],
+            status=row["status"],
+            timestamp=row["timestamp"],
+        )
+        for row in rows
+    ]
 
