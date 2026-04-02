@@ -1,9 +1,12 @@
+from unittest.mock import AsyncMock, patch
+
 import pytest
 
 
 @pytest.mark.anyio
 async def test_fix_network(client):
-    resp = await client.post("/api/v1/fix/fix_network_binding")
+    with patch("app.services.fixer.create_backup", new_callable=AsyncMock, return_value=1):
+        resp = await client.post("/api/v1/fix/fix_network_binding")
     assert resp.status_code == 200
     data = resp.json()
     assert data["action_id"] == "fix_network_binding"

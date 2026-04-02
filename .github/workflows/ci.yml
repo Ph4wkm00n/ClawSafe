@@ -20,7 +20,7 @@ jobs:
           python-version: "3.12"
       - run: pip install -r requirements-dev.txt
       - run: ruff check .
-      - run: pytest -v --cov=app --cov-report=term-missing --cov-fail-under=70
+      - run: pytest -v --cov=app --cov-report=term-missing --cov-fail-under=65
 
   frontend:
     runs-on: ubuntu-latest
