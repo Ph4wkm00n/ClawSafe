@@ -134,6 +134,24 @@ async def list_plugins():
     return {"plugins": list_all_plugins()}
 
 
+@router.get("/plugins/registry")
+async def get_plugin_registry(query: str = Query(default="")):
+    """Browse the plugin registry."""
+    from app.services.plugin_registry import fetch_registry, search_plugins
+    registry = await fetch_registry()
+    if query:
+        registry = search_plugins(registry, query)
+    return {"plugins": registry, "total": len(registry)}
+
+
+@router.post("/plugins/install")
+async def install_plugin_from_registry(name: str = Query(...)):
+    """Install a plugin from the registry."""
+    from app.services.plugin_registry import install_plugin
+    result = await install_plugin(name)
+    return result
+
+
 # ── Dependency Scanning ───────────────────────────────────────────────────
 
 

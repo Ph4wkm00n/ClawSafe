@@ -11,6 +11,7 @@ class PluginMeta:
     version: str = "0.1.0"
     description: str = ""
     plugin_type: str = ""  # "scanner", "fixer", "notifier"
+    sandboxed: bool = True  # Execute in isolated subprocess
 
 
 class ScannerPlugin(ABC):
