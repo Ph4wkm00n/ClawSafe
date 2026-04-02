@@ -132,3 +132,72 @@ async def list_plugins():
     """List all loaded plugins."""
     from app.plugins.loader import list_all_plugins
     return {"plugins": list_all_plugins()}
+
+
+# ── Dependency Scanning ───────────────────────────────────────────────────
+
+
+@router.get("/security/dependencies")
+async def scan_deps():
+    """Scan installed packages for known vulnerabilities."""
+    from app.services.dependency_scanner import scan_dependencies
+    vulns = scan_dependencies()
+    return {"vulnerabilities": vulns, "total": len(vulns)}
+
+
+# ── SBOM ──────────────────────────────────────────────────────────────────
+
+
+@router.get("/security/sbom")
+async def get_sbom():
+    """Generate Software Bill of Materials (CycloneDX format)."""
+    from app.services.sbom import generate_sbom
+    return generate_sbom()
+
+
+@router.get("/security/sbom/json")
+async def get_sbom_json():
+    """Generate SBOM in native CycloneDX JSON format."""
+    from app.services.sbom import generate_sbom_json
+    return generate_sbom_json()
+
+
+# ── Skill Execution Auditing ─────────────────────────────────────────────
+
+
+@router.get("/security/skill-audit")
+async def get_skill_audit(
+    instance_id: str | None = Query(default=None),
+    skill_name: str | None = Query(default=None),
+    limit: int = Query(default=50, ge=1, le=500),
+):
+    """Get skill execution audit trail."""
+    from app.services.skill_audit import get_skill_executions
+    executions = await get_skill_executions(instance_id, skill_name, limit)
+    return {"executions": [e.model_dump() for e in executions], "total": len(executions)}
+
+
+@router.get("/security/skill-audit/stats")
+async def get_skill_audit_stats():
+    """Get aggregated skill execution statistics."""
+    from app.services.skill_audit import get_skill_execution_stats
+    return await get_skill_execution_stats()
+
+
+# ── Evidence Collection ───────────────────────────────────────────────────
+
+
+@router.get("/security/evidence")
+async def get_evidence(control_id: str | None = Query(default=None)):
+    """List captured compliance evidence."""
+    from app.services.compliance import list_evidence
+    entries = await list_evidence(control_id)
+    return {"evidence": [e.model_dump() for e in entries], "total": len(entries)}
+
+
+@router.post("/security/evidence/capture")
+async def capture_evidence_snapshot(control_id: str = Query(...)):
+    """Capture a compliance evidence snapshot for a specific control."""
+    from app.services.compliance import capture_evidence
+    entry = await capture_evidence(control_id)
+    return entry.model_dump()
