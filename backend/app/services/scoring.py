@@ -259,9 +259,15 @@ def detect_environment() -> str:
 
 
 def _apply_environment_weight(score: int) -> int:
-    """Apply environment-based weight multiplier to a risk score."""
-    env = detect_environment()
-    weight = ENVIRONMENT_WEIGHTS.get(env, 1.0)
+    """Apply environment-based weight multiplier to a risk score.
+
+    Only applies when deploy_environment is explicitly configured, so
+    auto-detection doesn't unexpectedly alter scores in CI or tests.
+    """
+    from app.core.config import settings
+    if not settings.deploy_environment:
+        return score  # No weighting when not explicitly configured
+    weight = ENVIRONMENT_WEIGHTS.get(settings.deploy_environment, 1.0)
     return min(int(score * weight), 100)
 
 

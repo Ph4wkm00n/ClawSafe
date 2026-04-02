@@ -5,7 +5,10 @@ import pytest
 
 @pytest.mark.anyio
 async def test_fix_network(client):
-    with patch("app.services.fixer.create_backup", new_callable=AsyncMock, return_value=1):
+    with (
+        patch("app.services.fixer.create_backup", new_callable=AsyncMock, return_value=1),
+        patch("app.services.fixer._save_config", new_callable=AsyncMock),
+    ):
         resp = await client.post("/api/v1/fix/fix_network_binding")
     assert resp.status_code == 200
     data = resp.json()
