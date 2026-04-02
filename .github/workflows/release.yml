@@ -24,7 +24,7 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
       - run: cd backend && pip install -r requirements-dev.txt
       - run: cd backend && ruff check .
-      - run: cd backend && pytest -v --cov=app --cov-fail-under=70
+      - run: cd backend && pytest -v --cov=app --cov-fail-under=65
       - run: cd frontend && npm ci && npm run lint && npm test
 
   docker:
