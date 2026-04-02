@@ -143,6 +143,12 @@ def _score_updates(findings: dict) -> CategoryStatus:
 
     score = 0 if updates.get("up_to_date") else 50
 
+    # Increase score if running a version with known advisories
+    advisories = updates.get("advisories", [])
+    if advisories:
+        has_critical = any(a.get("severity") == "critical" for a in advisories)
+        score = min(score + (40 if has_critical else 20), 100)
+
     level = _level_from_score(score)
 
     summaries = {

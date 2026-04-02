@@ -2,12 +2,15 @@ from fastapi import APIRouter
 
 from app.api import (
     activity,
+    api_keys,
     audit,
     auth,
+    comparison,
     data,
     fixer,
     health,
     instances,
+    integrations,
     notifications,
     policy,
     recommendations,
@@ -16,6 +19,7 @@ from app.api import (
     settings,
     skill,
     status,
+    templates,
     vulnerabilities,
 )
 
@@ -36,3 +40,7 @@ api_router.include_router(vulnerabilities.router, tags=["vulnerabilities"])
 api_router.include_router(data.router, tags=["data"])
 api_router.include_router(audit.router, tags=["audit"])
 api_router.include_router(security.router, tags=["security"])
+api_router.include_router(templates.router, tags=["templates"])
+api_router.include_router(api_keys.router, tags=["api-keys"])
+api_router.include_router(comparison.router, tags=["comparison"])
+api_router.include_router(integrations.router, tags=["integrations"])

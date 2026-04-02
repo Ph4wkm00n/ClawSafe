@@ -21,9 +21,14 @@ async def health_check():
     all_ok = db_ok  # DB is critical; OpenClaw being unreachable is informational
 
     from app.models.schemas import HealthResponse
+    from app.services.advisories import check_advisories
+
+    version = HealthResponse().version
+    advisories = check_advisories(version)
 
     return {
         "status": "ok" if all_ok else "degraded",
-        "version": HealthResponse().version,
+        "version": version,
         "checks": checks,
+        "advisories": advisories,
     }
