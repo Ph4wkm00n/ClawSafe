@@ -102,6 +102,7 @@ async def apply_fix(action_id: str) -> FixResult:
             message=f"No auto-fix available for '{action_id}'.",
         )
 
+    backup_id = None
     try:
         backup_id = await create_backup(settings.openclaw_config_path, action_id)
         config = await _load_config()
